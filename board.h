@@ -20,6 +20,7 @@ class Board
   static bool terminal_test(board final);
   static bool win(board b, int player);
   static int valid_board_player(board b);
+  static int check_square(board input_board, int position_x, int position_y);
 
  private:
 
@@ -29,7 +30,6 @@ class Board
   static int dy_m[8];
 
   static int valid_square(board input_board, int position_x, int position_y);
-  static int check_square(board input_board, int position_x, int position_y);
   static int valid_position(board input_board, int position_x, int position_y, int player);
   static int valid_place(board input_board, int position_x, int position_y, int player);
   static Move parse_string(char* input);

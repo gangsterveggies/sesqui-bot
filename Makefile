@@ -11,6 +11,7 @@ SRC =                   	\
 	timer.cpp		\
 	search.cpp		\
 	ab.cpp			\
+	unionfind.cpp		\
 	mcts.cpp
 
 OBJ =  ${SRC:.cpp=.o}

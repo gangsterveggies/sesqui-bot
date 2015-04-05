@@ -3,6 +3,8 @@
 
 #include "common.h"
 #include "board.h"
+#include "unionfind.h"
 
-Move alphabeta(board b);
+vector<Move> alphabeta(board b);
+vector<Move> alphabeta(board b, int depth);
 #endif
