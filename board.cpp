@@ -1,5 +1,11 @@
 #include "board.h"
 
+char Board::output[40];
+int Board::dx_p[4] = {1, -1, 0, 0};
+int Board::dy_p[4] = {0, 0, 1, -1};
+int Board::dx_m[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
+int Board::dy_m[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
+
 int Board:: move_to_player(int move)
 {
   if (move == 0)
@@ -25,6 +31,21 @@ board Board::string_to_board(char* input)
   return n_board;
 }
 
+int Board::string_to_moves(char* input)
+{
+  int i, move = 0;
+
+  for (i = 0; input[i]; i++)
+  {
+    move++;
+    
+    while (input[i] != '$')
+      i++;
+  }
+
+  return move;
+}
+
 Move Board::parse_string(char* input)
 {
   char type = input[0];
@@ -32,65 +53,60 @@ Move Board::parse_string(char* input)
 
   if (type == 'm')
   {
-    int i = 2, current = 0;
+    int i = 2, current_x = 0, current_y = 0;
     while (input[i] != '|')
     {
-      current *= 10;
-      current += input[i] - '0';
+      current_x *= 10;
+      current_x += input[i] - '0';
       i++;
     }
-    pieces = current;
 
-    i++, current = 0;
+    i++;
     while (input[i] != '|')
     {
-      current *= 10;
-      current += input[i] - '0';
+      current_y *= 10;
+      current_y += input[i] - '0';
       i++;
     }
-    pieces <<= 6;
-    pieces += current;
+    pieces += current_x + current_y * 8;
 
-    i++, current = 0;
+    i++, current_x = 0, current_y = 0;
     while (input[i] != '|')
     {
-      current *= 10;
-      current += input[i] - '0';
+      current_x *= 10;
+      current_x += input[i] - '0';
       i++;
     }
-    pieces <<= 6;
-    pieces += current;
 
-    i++, current = 0;
+    i++;
     while (input[i] != '$')
     {
-      current *= 10;
-      current += input[i] - '0';
+      current_y *= 10;
+      current_y += input[i] - '0';
       i++;
     }
-    pieces <<= 6;
-    pieces += current;
+    pieces <<= 12;
+    pieces += current_x + current_y * 8;
   }
   else
   {
-    int i = 2, current = 0;
+    int i = 2, current_x = 0, current_y = 0;
     while (input[i] != '|')
     {
-      current *= 10;
-      current += input[i] - '0';
+      current_x *= 10;
+      current_x += input[i] - '0';
       i++;
     }
-    pieces = current;
 
-    i++, current = 0;
+    i++;
     while (input[i] != '$')
     {
-      current *= 10;
-      current += input[i] - '0';
+      current_y *= 10;
+      current_y += input[i] - '0';
       i++;
     }
-    pieces <<= 6;
-    pieces += current;
+    pieces <<= 12;
+    pieces += current_x + current_y * 8;
   }
 
   Move n_move = Move(type, pieces);
@@ -105,29 +121,26 @@ board Board::empty_board()
 
 board Board::make_move(board input_board, Move move, int player)
 {
-  long long int bitmask = (1 << 6) - 1;
+  int bitmask = (1 << 6) - 1;
   if (move.first == 'm')
   {
-    int second_y = (move.second & bitmask);
-    int second_x = (move.second & (bitmask << 6)) >> 6;
-    int first_y = (move.second & (bitmask << 12)) >> 12;
-    int first_x = (move.second & (bitmask << 18)) >> 18;
+    int second = (move.second & bitmask);
+    int first = (move.second & (bitmask << 12)) >> 12;
 
-    input_board.first ^= (1LL << (first_x + first_y * 8));
-    input_board.first ^= (1LL << (second_x + second_y * 8));
+    input_board.first ^= (1LL << first);
+    input_board.first ^= (1LL << second);
     
-    if ((input_board.second & (1LL << (second_x + second_y * 8))) > 0 != player > 0)
-      input_board.second ^= (1LL << (second_x + second_y * 8));
+    if ((input_board.second & (1LL << second)) > 0 != player > 0)
+      input_board.second ^= (1LL << second);
   }
   else
   {
-    int first_y = (move.second & bitmask);
-    int first_x = (move.second & (bitmask << 6)) >> 6;
+    int first = (move.second & bitmask);
 
-    input_board.first ^= (1LL << (first_x + first_y * 8));
+    input_board.first ^= (1LL << first);
     
-    if ((input_board.second & (1LL << (first_x + first_y * 8))) > 0 != player > 0)
-      input_board.second ^= (1LL << (first_x + first_y * 8));
+    if ((input_board.second & (1LL << first)) > 0 != player > 0)
+      input_board.second ^= (1LL << first);
   }
 
   return input_board;
@@ -150,4 +163,124 @@ void Board::print_board(board input_board)
     }
     printf("\n");
   }
+}
+
+char* Board::encode_move(Move move)
+{
+  int bitmask = (1 << 6) - 1;
+  output[0] = move.first;
+
+  if (move.first == 'm')
+  {
+    int second = (move.second & bitmask);
+    int first = (move.second & (bitmask << 12)) >> 12;
+
+    sprintf(output + 1, "|%d", first % 8);
+    sprintf(output + 3, "|%d", first / 8);
+    sprintf(output + 5, "|%d", second % 8);
+    sprintf(output + 7, "|%d", second / 8);
+    output[9] = '\0';
+  }
+  else
+  {
+    int first = (move.second & bitmask);
+
+    sprintf(output + 1, "|%d", first % 8);
+    sprintf(output + 3, "|%d", first / 8);
+    output[6] = '\0';
+  }
+
+  return output;
+}
+
+vector<Move> Board::available_moves(board input_board, int player, int move, int can_place, int can_move)
+{
+  vector<Move> list_moves;
+  int i, j, k;
+
+  for (i = 0; i < 8; i++)
+    for (j = 0; j < 8; j++)
+    {
+      if (move >= 3)
+      {
+        if (can_place && !(input_board.first & (1LL << (j + i * 8))) && (valid_position(input_board, j, i, player) && valid_place(input_board, j, i, player)))
+          list_moves.push_back(Move('p', (j + i * 8)));
+
+        if (can_move && (input_board.first & (1LL << (j + i * 8))) && ((input_board.second & (1LL << (j + i * 8))) == player))
+        {
+          input_board.first ^= (1LL << (j + i * 8));
+
+          for (k = 0; k < 8; k++)
+          {
+            int c_x = j + dx_m[k], c_y = i + dy_m[k];
+            
+            while (valid_square(input_board, c_x, c_y) && check_square(input_board, c_x, c_y) == -1 && valid_position(input_board, c_x, c_y, player))
+            {
+              list_moves.push_back(Move('m', (c_x + c_y * 8) + ((j + i * 8) << 12)));
+              c_x += dx_m[k];
+              c_y += dy_m[k];
+            }
+          }
+
+          input_board.first ^= (1LL << (j + i * 8));
+        }
+      }
+      else
+      {
+        if (check_square(input_board, j, i) == -1)
+          list_moves.push_back(Move('p', (j + i * 8)));
+      }
+    }
+
+  return list_moves;
+}
+
+int Board::check_square(board input_board, int position_x, int position_y)
+{
+  return (input_board.first & (1LL << (position_x + position_y * 8))) ? ((input_board.second & (1LL << (position_x + position_y * 8))) ? 1 : 0) : -1;
+}
+
+int Board::valid_square(board input_board, int position_x, int position_y)
+{
+  return position_x >= 0 && position_x <= 7 && position_y >= 0 && position_y <= 7;
+}
+
+int Board::valid_position(board input_board, int position_x, int position_y, int player)
+{
+  int mcol = player, ocol = 1 - player, i;
+
+  // Check:
+  // xo
+  // .x
+  int dxD[] = {0, 1};
+  int dyD[] = {1, 0};
+
+  int fl = 1;
+  for (i = 0; i < 2; i++)
+    fl &= ((valid_square(input_board, position_x + dxD[i], position_y + dyD[i])) && (check_square(input_board, position_x + dxD[i], position_y + dyD[i]) == ocol));
+  fl &= ((valid_square(input_board, position_x + 1, position_y + 1)) && (check_square(input_board, position_x + 1, position_y + 1) == mcol));
+
+  if (fl)
+    return 0;
+
+  // Check:
+  // x.
+  // ox
+  dxD[1] = -1;
+  dyD[0] = -1;
+
+  fl = 1;
+  for (i = 0; i < 2; i++)
+    fl &= ((valid_square(input_board, position_x + dxD[i], position_y + dyD[i])) && (check_square(input_board, position_x + dxD[i], position_y + dyD[i]) == ocol));
+  fl &= ((valid_square(input_board, position_x - 1, position_y - 1)) && (check_square(input_board, position_x - 1, position_y - 1) == mcol));
+
+  return !fl;
+}
+
+int Board::valid_place(board input_board, int position_x, int position_y, int player)
+{
+  int fl = 0, i;
+  for (i = 0; i < 4; i++)
+    fl |= (check_square(input_board, position_x + dx_p[i], position_y + dy_p[i]) == player);
+  return fl;
 }

@@ -8,6 +8,8 @@ int help_flag; // Show help info
 int method_flag; // Search method to use
 int verbose; // Print intermediate solution boards
 char* input_str; // Initial board string
+board initial_board; // Initial board object
+int initial_move; // Move of initial board
 
 void init()
 {
@@ -15,6 +17,11 @@ void init()
 
   help_flag = 0;
   verbose = 0;
+
+  method_flag = 0;
+  initial_move = 0;
+
+  initial_board = Board::empty_board();
 }
 
 int process_arguments(int argc, char *argv[])
@@ -32,7 +39,7 @@ int process_arguments(int argc, char *argv[])
     }
     else if (strcmp(argv[i], "--ab") == 0)
       method_flag = 0;
-    else if (strcmp(argv[i], "--mcst") == 0)
+    else if (strcmp(argv[i], "--mcts") == 0)
       method_flag = 1;
     else if (strcmp(argv[i], "--minimax") == 0)
       method_flag = 2;
@@ -56,19 +63,54 @@ void read_input()
 {
   if (input_str != NULL)
   {
-    board initial_board = Board::string_to_board(input_str);
-    Board::print_board(initial_board);
+    initial_board = Board::string_to_board(input_str);
+    initial_move = Board::string_to_moves(input_str);
   }
 }
 
-char* calculate()
+vector<Move> calculate()
 {
-  char* moves = (char*) malloc(sizeof(char) * 20);
+  vector<Move> list_moves;
+
+  if (method_flag == 0)
+  {
+  }
+  else if (method_flag == 1)
+  {
+    vector<Move> moves = Board::available_moves(initial_board, Board::move_to_player(initial_move), initial_move, 0, 1);
+    list_moves.push_back(moves[rand() % ((int)moves.size())]);
+    moves = Board::available_moves(Board::make_move(initial_board, moves[0], Board::move_to_player(initial_move)), Board::move_to_player(initial_move + 1), initial_move + 1, 1, 0);
+    list_moves.push_back(moves[rand() % ((int)moves.size())]);
+  }
+  else
+  {
+  }
+
+  return list_moves;
 }
 
-void output_result(char* output)
+void output_result(vector<Move> list_moves)
 {
-  
+  if (verbose)
+  {
+    printf("Initial board:\n");
+    Board::print_board(initial_board);
+    printf("\nMove in PM notation:\n");
+  }
+
+  int i;
+
+  for (i = 0; i < (int)list_moves.size(); i++)
+  {
+    printf("%s%c", Board::encode_move(list_moves[i]), i == (int)list_moves.size() - 1 ? '\n' : '$');
+    initial_board = Board::make_move(initial_board, list_moves[i], Board::move_to_player(i + initial_move));
+  }
+
+  if (verbose)
+  {
+    printf("\nBoard after set of moves:\n");
+    Board::print_board(initial_board);
+  }
 }
 
 int main(int argc, char *argv[])
@@ -84,11 +126,10 @@ int main(int argc, char *argv[])
   read_input();
 
   Timer::start();
-  char* output = calculate();
+  vector<Move> list_moves = calculate();
   Timer::stop();
 
-  output_result(output);
-  free(output);
+  output_result(list_moves);
 
   return 0;
 }

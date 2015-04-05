@@ -18,10 +18,8 @@ typedef pair<char, int> Move;
  *
  * char -> 'm' or 'p': move or place
  *
- * int -> first 6 bits: x coordinate of piece
- *     -> second 6 bits: y coordinate of piece
- *     -> third 6 bits: x coordinate of new piece (in case of move)
- *     -> last 6 bits: y coordinate of new piece (in case of move)
+ * int -> first 12 bits: x + y * 8 of piece
+ *     -> last 12 bits: x + y * 8 of new piece (in case of move)
  *
  */
 
