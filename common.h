@@ -12,6 +12,8 @@
 #include <unordered_map>
 #include <time.h>
 
+#define INF 1e30
+
 using namespace std;
 
 typedef pair<char, int> Move;

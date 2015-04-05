@@ -339,3 +339,11 @@ bool Board::win(board b, int player) {
   }
   return false;
 }
+
+int Board::valid_board_player(board b) {
+  int h = 0, v = 0;
+  for (int i = 0; i < 8; i++)
+    for (int j = 0; j < 8; j++) 
+      if(check_square(b, i, j)) v++; else h++;
+  return v != h+1 && (v || h); //1 if now is vertical's turn, 0 otherwise
+}

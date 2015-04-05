@@ -19,6 +19,7 @@ class Board
   static char* encode_move(Move move);
   static bool terminal_test(board final);
   static bool win(board b, int player);
+  static int valid_board_player(board b);
 
  private:
 
