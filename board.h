@@ -17,6 +17,8 @@ class Board
   static void print_board(board input_board);
   static vector<Move> available_moves(board input_board, int player, int move, int can_place, int can_move);
   static char* encode_move(Move move);
+  static bool terminal_test(board final);
+  static bool win(board b, int player);
 
  private:
 

@@ -284,3 +284,55 @@ int Board::valid_place(board input_board, int position_x, int position_y, int pl
     fl |= (check_square(input_board, position_x + dx_p[i], position_y + dy_p[i]) == player);
   return fl;
 }
+
+bool Board::terminal_test(board final) {
+  //presumes a valid board
+  if (win(final, 0) || win(final, 1))
+    return true;
+  if (final.first == (1 << 65)-1) //full board with no winner
+    return true;
+  return false;
+}
+
+bool Board::win(board b, int player) {
+  //presumes a valid board
+  pair<int, int> cur, d[3];
+  queue<pair<int, int> > q;
+  int v[8][8]; memset(v, 0, sizeof v);
+
+  if (player) {
+    //player 1 is vertical
+    for (int i = 0; i < 8; i++)
+      if (check_square(b, 0, i) == player) {
+	q.push(make_pair(0,i));
+	v[0][i] = 1;
+      }
+    d[0] = make_pair(1, 0); d[1] = make_pair(1, -1); d[2] = make_pair(1, 1);
+  }
+  else {
+    //player 0 is horizontal
+    for (int i = 0; i < 8; i++)
+      if (check_square(b, i, 0) == player) {
+	q.push(make_pair(i,0));
+	v[i][0] = 1;
+      }
+    d[0] = make_pair(0, 1); d[1] = make_pair(-1, 1); d[2] = make_pair(1, 1);
+  }
+
+  //bfs with (8*8)/2 iterations on worst case 
+  while (!q.empty()) {
+    cur = q.front(); q.pop();
+    
+    for (int i = 0; i < 3; i++) {
+      int nx = cur.first + d[i].first;
+      int ny = cur.second + d[i].second;
+      if (nx < 0 || ny < 0 || nx >= 8 || ny >= 8 || v[nx][ny])
+	continue;
+      if (player && nx == 7 || !player && ny == 7)
+	return true;
+      q.push(make_pair(nx, ny));
+      v[nx][ny] = 1;
+    }
+  }
+  return false;
+}

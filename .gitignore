@@ -27,3 +27,7 @@
 *.out
 *.app
 SESQUIBOT
+
+# Backup Files
+*~
+*#

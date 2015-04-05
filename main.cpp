@@ -130,6 +130,10 @@ int main(int argc, char *argv[])
   Timer::stop();
 
   output_result(list_moves);
-
+  /*
+  if (!Board::win(initial_board, 0))
+    printf("no!!!\n");
+  if (Board::win(make_pair((1 << 65)-1, 0LL), 0))
+  printf("yay white wins!!!\n");*/
   return 0;
 }
