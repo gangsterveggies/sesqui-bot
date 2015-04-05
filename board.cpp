@@ -291,6 +291,9 @@ bool Board::terminal_test(board final) {
     return true;
   if (final.first == (1 << 65)-1) //full board with no winner
     return true;
+  //TODO handle no more movements case
+  //if (available_moves(final, int player, int move, int can_place, int can_move).size() == 0)
+  //  return true;
   return false;
 }
 
