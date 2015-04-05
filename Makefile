@@ -3,12 +3,13 @@ CC=g++
 
 # CFLAGS= -Wall -Wno-write-strings -O0 -g
 #CFLAGS= -w -Wno-write-strings -O3 -g
-CFLAGS= -w -Wno-write-strings -O3 -g
+CFLAGS= -w -Wno-write-strings -O3 -g -std=c++0x
 
 SRC =                   	\
 	main.cpp 		\
 	board.cpp		\
-	timer.cpp		
+	timer.cpp		\
+	ab.cpp
 
 OBJ =  ${SRC:.cpp=.o}
 

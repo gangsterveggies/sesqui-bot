@@ -8,6 +8,8 @@
 #include <vector>
 #include <algorithm>
 #include <queue>
+#include <list>
+#include <unordered_map>
 #include <time.h>
 
 using namespace std;
