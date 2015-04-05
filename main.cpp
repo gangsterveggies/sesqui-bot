@@ -1,9 +1,13 @@
 #include "common.h"
+#include "board.h"
 #include "timer.h"
+
+// ./SESQUIBOT -i "p|3|4\$p|2|2\$p|4|2\$m|3|4|3|5\$p|4|5\$p|2|3\$m|2|3|4|3\$"
 
 int help_flag; // Show help info
 int method_flag; // Search method to use
 int verbose; // Print intermediate solution boards
+char* input_str; // Initial board string
 
 void init()
 {
@@ -23,6 +27,8 @@ int process_arguments(int argc, char *argv[])
       verbose = 1;
     else if ((strcmp(argv[i], "-i") == 0))
     {
+      input_str = argv[i + 1];
+      i++;
     }
     else if (strcmp(argv[i], "--ab") == 0)
       method_flag = 0;
@@ -48,6 +54,11 @@ void output_help()
 
 void read_input()
 {
+  if (input_str != NULL)
+  {
+    board initial_board = Board::string_to_board(input_str);
+    Board::print_board(initial_board);
+  }
 }
 
 char* calculate()
