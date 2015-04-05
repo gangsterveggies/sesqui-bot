@@ -13,7 +13,7 @@ int initial_move; // Move of initial board
 
 void init()
 {
-  srand(time(NULL));
+  srand(7331);//time(NULL));
 
   help_flag = 0;
   verbose = 0;
@@ -79,7 +79,7 @@ vector<Move> calculate()
   {
     vector<Move> moves = Board::available_moves(initial_board, Board::move_to_player(initial_move), initial_move, 0, 1);
     list_moves.push_back(moves[rand() % ((int)moves.size())]);
-    moves = Board::available_moves(Board::make_move(initial_board, moves[0], Board::move_to_player(initial_move)), Board::move_to_player(initial_move + 1), initial_move + 1, 1, 0);
+    moves = Board::available_moves(Board::make_move(initial_board, list_moves[0], Board::move_to_player(initial_move)), Board::move_to_player(initial_move + 1), initial_move + 1, 1, 0);
     list_moves.push_back(moves[rand() % ((int)moves.size())]);
   }
   else

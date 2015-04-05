@@ -1,5 +1,7 @@
 #!/usr/bin/python
+
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+import os
 
 PORT_NUMBER = 8000
 
@@ -8,12 +10,27 @@ class myHandler(BaseHTTPRequestHandler):
     self.send_response(200)
     self.send_header('Content-type','application/json')
     self.end_headers()
-    self.wfile.write("{\n  \"moves\": [\n    \"p|1|1\",\n    \"p|1|2\"\n  ]\n}")
-#    self.wfile.write("{\n  'moves': [\n    'p|1|1',\n    'm|1|1|3|3'\n  ]\n}")
+#    self.wfile.write("{\n  \"moves\": [\n    \"p|1|1\",\n    \"p|1|2\"\n  ]\n}")
 
     if ("board" in self.path):
-      print self.path[self.path.index("=") + 1:]
+      moves = "{\n  \"moves\": [\n    \"%s\"\n  ]\n}"
+      moves_2 = "{\n  \"moves\": [\n    \"%s\",\n    \"%s\"\n  ]\n}"
+
+      cmd = './SESQUIBOT -i ' + '"' + self.escape_dump(self.path[self.path.index("=") + 1:]) + '" --mcts'
+
+      out = os.popen(cmd).read()
+
+      move_list = out.split('$')
+
+      if len(move_list) == 1:
+        self.wfile.write(moves % move_list[0].strip())
+      elif len(move_list) == 2:
+        self.wfile.write(moves_2 % (move_list[0], move_list[1].strip()))
+
     return
+
+  def escape_dump(self, dump):
+    return dump.replace('$', '\\$')
 
 try:
   server = HTTPServer(('', PORT_NUMBER), myHandler)

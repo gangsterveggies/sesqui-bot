@@ -206,7 +206,7 @@ vector<Move> Board::available_moves(board input_board, int player, int move, int
         if (can_place && !(input_board.first & (1LL << (j + i * 8))) && (valid_position(input_board, j, i, player) && valid_place(input_board, j, i, player)))
           list_moves.push_back(Move('p', (j + i * 8)));
 
-        if (can_move && (input_board.first & (1LL << (j + i * 8))) && ((input_board.second & (1LL << (j + i * 8))) == player))
+        if (can_move && (input_board.first & (1LL << (j + i * 8))) && (check_square(input_board, j, i) == player))
         {
           input_board.first ^= (1LL << (j + i * 8));
 
