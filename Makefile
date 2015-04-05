@@ -9,7 +9,9 @@ SRC =                   	\
 	main.cpp 		\
 	board.cpp		\
 	timer.cpp		\
-	ab.cpp
+	search.cpp		\
+	ab.cpp			\
+	mcts.cpp
 
 OBJ =  ${SRC:.cpp=.o}
 

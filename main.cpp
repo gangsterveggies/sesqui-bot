@@ -1,6 +1,8 @@
 #include "common.h"
 #include "board.h"
 #include "timer.h"
+#include "search.h"
+#include "mcts.h"
 
 // ./SESQUIBOT -i "p|3|4\$p|2|2\$p|4|2\$m|3|4|3|5\$p|4|5\$p|2|3\$m|2|3|4|3\$"
 
@@ -43,6 +45,8 @@ int process_arguments(int argc, char *argv[])
       method_flag = 1;
     else if (strcmp(argv[i], "--minimax") == 0)
       method_flag = 2;
+    else if (strcmp(argv[i], "--random") == 0)
+      method_flag = 3;
     else
       return 1;
   return 0;
@@ -71,20 +75,30 @@ void read_input()
 vector<Move> calculate()
 {
   vector<Move> list_moves;
+  Search* engine;
 
   if (method_flag == 0)
   {
   }
   else if (method_flag == 1)
   {
+    engine = new MCTS();
+  }
+  else if (method_flag == 2)
+  {
+  }
+  else
+  {
     vector<Move> moves = Board::available_moves(initial_board, Board::move_to_player(initial_move), initial_move, 0, 1);
     list_moves.push_back(moves[rand() % ((int)moves.size())]);
     moves = Board::available_moves(Board::make_move(initial_board, list_moves[0], Board::move_to_player(initial_move)), Board::move_to_player(initial_move + 1), initial_move + 1, 1, 0);
     list_moves.push_back(moves[rand() % ((int)moves.size())]);
   }
-  else
-  {
-  }
+
+  engine->solve(initial_board);
+  list_moves = engine->get_solution();
+
+  delete engine;
 
   return list_moves;
 }
