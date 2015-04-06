@@ -2,6 +2,7 @@
 
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import os
+import sys
 
 PORT_NUMBER = 8000
 
@@ -16,7 +17,7 @@ class myHandler(BaseHTTPRequestHandler):
       moves = "{\n  \"moves\": [\n    \"%s\"\n  ]\n}"
       moves_2 = "{\n  \"moves\": [\n    \"%s\",\n    \"%s\"\n  ]\n}"
 
-      cmd = './SESQUIBOT -i ' + '"' + self.escape_dump(self.path[self.path.index("=") + 1:]) + '" --mcts'
+      cmd = './SESQUIBOT -i ' + '"' + self.escape_dump(self.path[self.path.index("=") + 1:]) + '" ' + (sys.argv[1] if len(sys.argv) > 1 else '--mcts')
 
       out = os.popen(cmd).read()
 
