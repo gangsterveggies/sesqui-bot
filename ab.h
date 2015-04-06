@@ -4,7 +4,15 @@
 #include "common.h"
 #include "board.h"
 #include "unionfind.h"
+#include "search.h"
 
-vector<Move> alphabeta(board b);
-vector<Move> alphabeta(board b, int depth);
+class AB : public Search {
+public:
+  AB();
+  ~AB();
+  void solve(board initial_board);
+protected:
+  vector<Move> list_moves;
+};
+
 #endif

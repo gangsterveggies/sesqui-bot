@@ -1,17 +1,7 @@
 #include "ab.h"
 
-struct pairhash {
-//see http://stackoverflow.com/questions/20590656/error-for-hash-function-of-pair-of-ints
-public:
-  template <typename T, typename U>
-  std::size_t operator()(const std::pair<T, U> &x) const
-  {
-    return std::hash<T>()(x.first) ^ std::hash<U>()(x.second);
-  }
-};
-
-unordered_map<board, list<board>, pairhash> sons;
-unordered_map<board, int, pairhash> val; //the ab value of a node
+unordered_map<board, list<board>, Board::hash> sons;
+unordered_map<board, int, Board::hash> val; //the ab value of a node
 
 list<Move>& Successors(board b);
 int MaxValue(board b, int alpha, int beta);
@@ -20,10 +10,16 @@ int Utility(board b);
 bool TerminalTest(board b);
 int value(board b);
 int heuristic(board b);
+vector<Move> alphabeta(board b, int depth);
+vector<Move> alphabeta(board b);
 
 int max_depth = 10;
 int cur_depth = 0;
 int cur_player;
+
+void AB::solve(board initial_board) {
+  list_moves = alphabeta(initial_board);
+}
 
 vector<Move> alphabeta(board b, int depth) {
   swap(depth, max_depth);
