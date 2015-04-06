@@ -316,8 +316,8 @@ bool Board::win(board b, int player) {
   queue<pair<int, int> > q;
   int v[8][8]; memset(v, 0, sizeof v);
 
-  if (player) {
-    //player 1 is vertical
+  if (!player) {
+    //player 1 is horizontal
     for (int i = 0; i < 8; i++)
       if (check_square(b, 0, i) == player) {
 	q.push(make_pair(0,i));
@@ -326,7 +326,7 @@ bool Board::win(board b, int player) {
     d[0] = make_pair(1, 0); d[1] = make_pair(1, -1); d[2] = make_pair(1, 1);
   }
   else {
-    //player 0 is horizontal
+    //player 0 is vertical
     for (int i = 0; i < 8; i++)
       if (check_square(b, i, 0) == player) {
 	q.push(make_pair(i,0));
