@@ -198,6 +198,11 @@ vector<Move> Board::available_moves(board input_board, int player, int move, int
   vector<Move> list_moves;
   int i, j, k;
 
+  if (win(input_board) != -1)
+    return list_moves;
+
+  printf("here\n");
+
   for (i = 0; i < 8; i++)
     for (j = 0; j < 8; j++)
     {
@@ -281,7 +286,7 @@ int Board::valid_place(board input_board, int position_x, int position_y, int pl
 {
   int fl = 0, i;
   for (i = 0; i < 4; i++)
-    fl |= (check_square(input_board, position_x + dx_p[i], position_y + dy_p[i]) == player);
+    fl |= (valid_square(input_board, position_x + dx_p[i], position_y + dy_p[i]) && (check_square(input_board, position_x + dx_p[i], position_y + dy_p[i]) == player));
   return fl;
 }
 
