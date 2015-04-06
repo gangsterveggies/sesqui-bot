@@ -6,6 +6,40 @@ int Board::dy_p[4] = {0, 0, 1, -1};
 int Board::dx_m[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
 int Board::dy_m[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
 
+int Board::heuristic(board b) {
+  //TODO: a better heuristic
+  int cur_player = Board::valid_board_player(b);
+
+  UnionFind sets(8*8);
+  int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1};
+  int dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
+  for (int i = 0; i < 8; i++)
+    for (int j = 0; j < 8; j++) {
+      if (Board::check_square(b, i, j) == -1)
+	continue;
+      for (int k = 0; k < 8; k++) {
+	int nx = i + dx[k];
+	int ny = j + dy[k];
+	if (nx < 0 || ny < 0 || nx >= 8 || ny >= 9)
+	  continue;
+	if (Board::check_square(b, i, j) == Board::check_square(b, nx, ny))
+	  sets.setUnion(i*8+j, nx*8+ny);
+      }
+    }
+  int mine = 0;
+  int other = 0;
+  for (int i = 0; i < 8; i++)
+    for (int j = 0; j < 8; j++)
+      if (Board::check_square(b, i, j) == cur_player)
+	mine += sets.setSize(8*i+j);
+      else if (Board::check_square(b, i, j) == !cur_player)
+	other += sets.setSize(8*i+j);
+  //effectively returns the difference of the sums of the squares of the length of each "chain"
+  //could be done with dfs, but way more fun with UF
+  return mine-other;
+}
+
+
 int Board:: move_to_player(int move)
 {
   if (move == 0)

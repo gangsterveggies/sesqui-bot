@@ -2,6 +2,7 @@
 #define _BOARD_
 
 #include "common.h"
+#include "unionfind.h"
 
 class Board
 {
@@ -22,6 +23,7 @@ class Board
   static int win(board b);
   static int valid_board_player(board b);
   static int check_square(board input_board, int position_x, int position_y);
+  static int heuristic(board b);
 
   struct hash {
   public:

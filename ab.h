@@ -3,7 +3,6 @@
 
 #include "common.h"
 #include "board.h"
-#include "unionfind.h"
 #include "search.h"
 
 int heuristic(board b);
