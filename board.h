@@ -19,8 +19,19 @@ class Board
   static char* encode_move(Move move);
   static bool terminal_test(board final);
   static bool win(board b, int player);
+  static int win(board b);
   static int valid_board_player(board b);
   static int check_square(board input_board, int position_x, int position_y);
+
+  struct hash {
+  public:
+    template <typename T, typename U>
+    std::size_t operator()(const std::pair<T, U> &x) const
+    {
+      //return std::hash<T>()(x.first) ^ std::hash<U>()(x.second);
+      return std::hash<U>()(x.second);
+    }
+  };
 
  private:
 
