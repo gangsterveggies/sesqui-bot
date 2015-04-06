@@ -81,17 +81,25 @@ vector<vector<Move> > AB::Successors(board b) {
   vector<Move> r1;
   vector<vector<Move> > r;
   int player = Board::valid_board_player(b);
+  player = 1;
+
+  int npieces = 0;
+  for (int i = 0; i < 64; i++)
+    if ((1 << i) & b.first)
+      npieces++;
 
   //first move
-  r1 = Board::available_moves(b, player, 4, 1, 1); //TODO change 4
+  r1 = Board::available_moves(b, player, npieces, 1, 1);
   
-  //second move
-  for (auto m : r1)
-    for (auto mov : Board::available_moves(Board::make_move(b, m, player), player, 4+1, m.first != 'p', m.first != 'm')) {
-      vector<Move> v;
-      v.push_back(m); v.push_back(mov);
-      r.push_back(v);
-    }
+  if (npieces) {
+    //second move
+    for (auto m : r1)
+      for (auto mov : Board::available_moves(Board::make_move(b, m, player), player, npieces, m.first != 'p' || npieces <= 2, m.first != 'm' && npieces >= 3)) {
+	vector<Move> v;
+	v.push_back(m); v.push_back(mov);
+	r.push_back(v);
+      }
+  }
   return sons[b] = r;
 }
 
