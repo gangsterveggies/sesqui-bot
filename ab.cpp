@@ -1,90 +1,9 @@
 #include "ab.h"
 
-unordered_map<board, list<board>, Board::hash> sons;
-unordered_map<board, int, Board::hash> val; //the ab value of a node
-
-list<Move>& Successors(board b);
-int MaxValue(board b, int alpha, int beta);
-int MinValue(board b, int alpha, int beta);
-int Utility(board b);
-bool TerminalTest(board b);
-int value(board b);
-int heuristic(board b);
-vector<Move> alphabeta(board b, int depth);
-vector<Move> alphabeta(board b);
-
-int max_depth = 10;
-int cur_depth = 0;
-int cur_player;
-
-void AB::solve(board initial_board) {
-  list_moves = alphabeta(initial_board);
-}
-
-vector<Move> alphabeta(board b, int depth) {
-  swap(depth, max_depth);
-  vector<Move> m = alphabeta(b);
-  swap(depth, max_depth);
-  return m;
-}
-
-vector<Move> alphabeta(board b) {
-  int v;
-  cur_player = Board::valid_board_player(b);
-  if (cur_player)
-    v = MinValue(b, -INF, INF);
-  else
-    v = MaxValue(b, -INF, INF);
-
-  /*
-  for (auto it : Successors(b))
-    if (value(it) == v)
-    return it;*/
-  return vector<Move>();
-}
-
-list<Move>& Successors(board b) {
-}
-
-int MaxValue(board b, int alpha, int beta) {
-  if (TerminalTest(b))
-    return Utility(b);
-  int v = -INF;
-  for (auto it : Successors(b)) {
-    v = max(v, MinValue(it, alpha, beta));
-    if (v >= beta)
-      return v;
-    alpha = max(alpha, v);
-  }
-  return v;
-}
-
-int MinValue(board b, int alpha, int beta) {
-  if (TerminalTest(b))
-    return Utility(b);
-  int v = INF;
-  for (auto it : Successors(b)) {
-    v = min(v, MinValue(it, alpha, beta));
-    if (v <= alpha)
-      return v;
-    beta = min(beta, v);
-  }
-  return v;
-}
-
-int Utility(board b) {
-  if (Board::win(b, cur_player))
-    return INF-1;
-  else if (Board::win(b, !cur_player))
-    return -INF+1;
-
-  if (cur_depth >= max_depth)
-    return heuristic(b);
-  return 0;
-}
-
 int heuristic(board b) {
   //TODO: a better heuristic
+  int cur_player = Board::valid_board_player(b);
+
   UnionFind sets(8*8);
   int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1};
   int dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
@@ -114,13 +33,126 @@ int heuristic(board b) {
   return mine-other;
 }
 
-int value(board b) {
+AB::AB() {
+  cur_depth = 0;
+  max_depth = 10;
+}
+
+AB::AB(int mdepth){
+  AB();
+  max_depth = mdepth;
+}
+
+AB::~AB() {}
+
+void AB::solve(board initial_board, int initial_move, int mdepth) {
+  swap(mdepth, max_depth);
+  solve(initial_board, initial_move);
+  swap(mdepth, max_depth);
+}
+
+void AB::solve(board initial_board, int initial_move) {
+  int v;
+  cur_player = Board::valid_board_player(initial_board);
+  if (cur_player)
+    v = MinValue(initial_board, -INF, INF);
+  else
+    v = MaxValue(initial_board, -INF, INF);
+
+  for (auto it : Successors(initial_board)) {
+    if (value(applyMoves(initial_board, it)) == v) {
+      list_moves = it;
+      break;
+    }
+  }
+}
+
+board AB::applyMoves(board b, vector<Move> m) {
+  board nb = b;
+  for (auto mov : m)
+    nb = Board::make_move(nb, mov, cur_player);
+  return nb;
+}
+
+vector<vector<Move> > AB::Successors(board b) {
+  if (sons.find(b) != sons.end())
+    return sons[b];
+
+  vector<Move> r1;
+  vector<vector<Move> > r;
+  int player = Board::valid_board_player(b);
+
+  //first move
+  r1 = Board::available_moves(b, player, 4, 1, 1); //TODO change 4
+  
+  //second move
+  for (auto m : r1)
+    for (auto mov : Board::available_moves(Board::make_move(b, m, player), player, 4+1, m.first != 'p', m.first != 'm')) {
+      vector<Move> v;
+      v.push_back(m); v.push_back(mov);
+      r.push_back(v);
+    }
+  return sons[b] = r;
+}
+
+int AB::MaxValue(board b, int alpha, int beta) {
+  cur_depth++;
+  if (TerminalTest(b)) {
+    cur_depth--;
+    return Utility(b);
+  }
+
+  int v = -INF;
+  for (auto it : Successors(b)) {
+    v = max(v, MinValue(applyMoves(b, it), alpha, beta));
+    if (v >= beta) {
+      cur_depth--;
+      return v;
+    }
+    alpha = max(alpha, v);
+  }
+  cur_depth--;
+  return v;
+}
+
+int AB::MinValue(board b, int alpha, int beta) {
+  cur_depth++;
+  if (TerminalTest(b)) {
+    cur_depth--;
+    return Utility(b);
+  }
+
+  int v = INF;
+  for (auto it : Successors(b)) {
+    v = min(v, MaxValue(applyMoves(b, it), alpha, beta));
+    if (v <= alpha) {
+      cur_depth--;
+      return v;
+    }
+    beta = min(beta, v);
+  }
+  cur_depth--;
+  return v;
+}
+
+int AB::Utility(board b) {
+  if (Board::win(b, cur_player))
+    return val[b] = INF-1;
+  else if (Board::win(b, !cur_player))
+    return val[b] = -INF+1;
+
+  if (cur_depth >= max_depth)
+    return val[b] = heuristic(b);
+  return 0;
+}
+
+int AB::value(board b) {
   if (val.find(b) != val.end())
     return val[b];
   return 0;
 }
 
-bool TerminalTest(board b) {
+bool AB::TerminalTest(board b) {
   if (Board::terminal_test(b) || cur_depth >= max_depth)
     return true;
   return false;

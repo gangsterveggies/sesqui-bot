@@ -3,6 +3,7 @@
 #include "timer.h"
 #include "search.h"
 #include "mcts.h"
+#include "ab.h"
 
 // ./SESQUIBOT -i "p|3|4\$p|2|2\$p|4|2\$m|3|4|3|5\$p|4|5\$p|2|3\$m|2|3|4|3\$"
 
@@ -79,6 +80,7 @@ vector<Move> calculate()
 
   if (method_flag == 0)
   {
+    engine = new AB(4);
   }
   else if (method_flag == 1)
   {
