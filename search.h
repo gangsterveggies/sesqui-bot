@@ -9,7 +9,7 @@ class Search
 
   virtual ~Search() {};
 
-  virtual void solve(board initial_board) {};
+  virtual void solve(board initial_board, int initial_move) {};
   vector<Move> get_solution();
 
  protected:
