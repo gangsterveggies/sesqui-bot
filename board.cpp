@@ -297,6 +297,14 @@ bool Board::terminal_test(board final) {
   return false;
 }
 
+int Board::win(board b) {
+  if (win(b, 0))
+    return 0;
+  if (win(b, 1))
+    return 1;
+  return -1;
+}
+
 bool Board::win(board b, int player) {
   //presumes a valid board
   pair<int, int> cur, d[3];
@@ -347,3 +355,4 @@ int Board::valid_board_player(board b) {
       if(check_square(b, i, j)) v++; else h++;
   return v != h+1 && (v || h); //1 if now is vertical's turn, 0 otherwise
 }
+
