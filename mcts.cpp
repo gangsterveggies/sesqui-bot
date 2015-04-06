@@ -14,12 +14,13 @@ struct MCTS::node
 
 MCTS::MCTS()
 {
-  max_iterations = 10;
+  max_iterations = 1000;
   UCTK = 1;
 }
 
 MCTS::~MCTS()
 {
+  list_moves.clear();
   delete_nodes(root);
 }
 
@@ -52,15 +53,15 @@ MCTS::node* MCTS::UCT_select_child(node* current)
   return next;
 }
 
-Move MCTS::UCT(board current_board, int current_move)
+Move MCTS::UCT(board current_board, int current_move, int current_has_place, int current_has_move)
 {
   int i;
 
   root = new node();
   root->state = current_board;
   root->move_number = current_move;
-  root->has_move = 0;
-  root->has_place = 0;
+  root->has_move = current_has_move;
+  root->has_place = current_has_place;
   root->untried_moves = Board::available_moves(root->state, Board::move_to_player(current_move), current_move, !root->has_place, !root->has_move);
   root->parent = NULL;
 
@@ -138,22 +139,36 @@ Move MCTS::UCT(board current_board, int current_move)
   Move best_move;
   int best_visits = 0;
   for (i = 0; i < (int)root->children.size(); i++)
+  {
     if (root->children[i]->visits > best_visits)
     {
       best_move = root->children[i]->move;
       best_visits = root->children[i]->visits;
     }
-
+  }
+    
   return best_move;
 }
 
 void MCTS::solve(board initial_board, int initial_move)
 {
-  list_moves.push_back(UCT(initial_board, initial_move));
+/*  printf("%d\n", Board::win(initial_board));
+  Board::print_board(initial_board);
+  vector<Move> tmp = Board::available_moves(initial_board, Board::move_to_player(initial_move), initial_move, 0, 1);
+  for (int i = 0; i < (int)tmp.size(); i++)
+    printf("%s - ", Board::encode_move(tmp[i]));
+  printf("\n\n");
+
+  root = new node();
+  return;*/
+
+  list_moves.push_back(UCT(initial_board, initial_move, 0, 0));
 
   if (initial_move > 0)
   {
+    delete_nodes(root);
     initial_board = Board::make_move(initial_board, list_moves[0], Board::move_to_player(initial_move));
-    list_moves.push_back(UCT(initial_board, initial_move + 1));
+
+    list_moves.push_back(UCT(initial_board, initial_move + 1, list_moves[0].first == 'p', list_moves[0].first == 'm'));
   }
 }

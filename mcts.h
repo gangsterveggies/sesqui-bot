@@ -23,7 +23,7 @@ class MCTS : public Search
 
   void delete_nodes(node* current);
   node* UCT_select_child(node* current);
-  Move UCT(board current_board, int current_move);
+  Move UCT(board current_board, int current_move, int current_has_place, int current_has_move);
 };
 
 #endif

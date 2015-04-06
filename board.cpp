@@ -201,8 +201,6 @@ vector<Move> Board::available_moves(board input_board, int player, int move, int
   if (win(input_board) != -1)
     return list_moves;
 
-  printf("here\n");
-
   for (i = 0; i < 8; i++)
     for (j = 0; j < 8; j++)
     {
@@ -312,18 +310,18 @@ int Board::win(board b) {
 
 bool Board::win(board b, int player) {
   //presumes a valid board
-  pair<int, int> cur, d[3];
+  pair<int, int> cur, d[5];
   queue<pair<int, int> > q;
   int v[8][8]; memset(v, 0, sizeof v);
 
-  if (!player) {
+  if (player) {
     //player 1 is horizontal
     for (int i = 0; i < 8; i++)
       if (check_square(b, 0, i) == player) {
 	q.push(make_pair(0,i));
 	v[0][i] = 1;
       }
-    d[0] = make_pair(1, 0); d[1] = make_pair(1, -1); d[2] = make_pair(1, 1);
+    d[0] = make_pair(1, 0); d[1] = make_pair(1, -1); d[2] = make_pair(1, 1); d[3] = make_pair(0, 1); d[4] = make_pair(0, -1);
   }
   else {
     //player 0 is vertical
@@ -332,24 +330,31 @@ bool Board::win(board b, int player) {
 	q.push(make_pair(i,0));
 	v[i][0] = 1;
       }
-    d[0] = make_pair(0, 1); d[1] = make_pair(-1, 1); d[2] = make_pair(1, 1);
+    d[0] = make_pair(0, 1); d[1] = make_pair(-1, 1); d[2] = make_pair(1, 1); d[3] = make_pair(1, 0); d[3] = make_pair(-1, 0);
   }
 
   //bfs with (8*8)/2 iterations on worst case 
   while (!q.empty()) {
     cur = q.front(); q.pop();
     
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 5; i++) {
       int nx = cur.first + d[i].first;
       int ny = cur.second + d[i].second;
+
       if (nx < 0 || ny < 0 || nx >= 8 || ny >= 8 || v[nx][ny])
 	continue;
-      if (player && nx == 7 || !player && ny == 7)
+
+      if (check_square(b, nx, ny) != player)
+        continue;
+
+      if ((player && nx == 7) || (!player && ny == 7))
 	return true;
+
       q.push(make_pair(nx, ny));
       v[nx][ny] = 1;
     }
   }
+
   return false;
 }
 
