@@ -95,7 +95,7 @@ vector<Move> calculate()
     list_moves.push_back(moves[rand() % ((int)moves.size())]);
   }
 
-  engine->solve(initial_board);
+  engine->solve(initial_board, initial_move);
   list_moves = engine->get_solution();
 
   delete engine;
