@@ -29,7 +29,7 @@ private:
   int Utility(board b);
   int value(board b);
   bool TerminalTest(board b);
-  board applyMoves(board b, vector<Move> m);
+  board applyMoves(board b, vector<Move> m, int player);
 };
 
 #endif
