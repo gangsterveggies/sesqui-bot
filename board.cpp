@@ -8,7 +8,13 @@ int Board::dy_m[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
 
 int Board::heuristic(board b) {
   //TODO: a better heuristic
+
   int cur_player = Board::valid_board_player(b);
+
+  if (win(b) == cur_player)
+    return 10000;
+  else if (win(b) != -1)
+    return 0;
 
   UnionFind sets(8*8);
   int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1};
@@ -20,7 +26,7 @@ int Board::heuristic(board b) {
       for (int k = 0; k < 8; k++) {
 	int nx = i + dx[k];
 	int ny = j + dy[k];
-	if (nx < 0 || ny < 0 || nx >= 8 || ny >= 9)
+	if (nx < 0 || ny < 0 || nx >= 8 || ny >= 8)
 	  continue;
 	if (Board::check_square(b, i, j) == Board::check_square(b, nx, ny))
 	  sets.setUnion(i*8+j, nx*8+ny);

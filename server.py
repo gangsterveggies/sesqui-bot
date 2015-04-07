@@ -23,6 +23,7 @@ class myHandler(BaseHTTPRequestHandler):
 
       move_list = out.split('$')
 
+      print out
       if len(move_list) == 1:
         self.wfile.write(moves % move_list[0].strip())
       elif len(move_list) == 2:

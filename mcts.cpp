@@ -14,7 +14,7 @@ struct MCTS::node
 
 MCTS::MCTS()
 {
-  max_iterations = 1000;
+  max_iterations = 2500;
   UCTK = 1;
 }
 
@@ -31,6 +31,25 @@ void MCTS::delete_nodes(node* current)
     delete_nodes(current->children[i]);
 
   delete current;
+}
+
+Move MCTS::select_random_move(vector<Move> pos_moves, board current_board)
+{
+  int i, best_outcome = -1;
+  Move best_move;
+  for (i = 0; i < 3; i++)
+  {
+    Move this_move = pos_moves[rand() % ((int)pos_moves.size())];
+    board this_board = Board::make_move(current_board, this_move, Board::valid_board_player(current_board));
+    int this_outcome = Board::heuristic(this_board);
+    if (this_outcome > best_outcome)
+    {
+      best_outcome = this_outcome;
+      best_move = this_move;
+    }
+  }
+
+  return best_move;
 }
 
 MCTS::node* MCTS::UCT_select_child(node* current)
@@ -107,11 +126,12 @@ Move MCTS::UCT(board current_board, int current_move, int current_has_place, int
     int has_place = current->has_place;
     int has_move = current->has_move;
     int current_move = current->move_number;
+    new_board = current->state;
     vector<Move> current_list = Board::available_moves(new_board, Board::move_to_player(current_move), current_move, !has_place, !has_move);
 
     while (!current_list.empty())
     {
-      Move next_move = current_list[rand() % ((int) current_list.size())];
+      Move next_move = select_random_move(current_list, new_board);
       new_board = Board::make_move(new_board, next_move, Board::move_to_player(current_move));
 
       has_move = next_move.first == 'm';
@@ -128,10 +148,12 @@ Move MCTS::UCT(board current_board, int current_move, int current_has_place, int
       current_list = Board::available_moves(new_board, Board::move_to_player(current_move), current_move, !has_place, !has_move);
     }
 
+    int winner = Board::win(new_board);
+
     while (current != NULL)
     {
       current->visits++;
-      current->wins += Board::win(new_board) == Board::move_to_player(current->move_number);
+      current->wins += winner == Board::move_to_player(current->move_number);
       current = current->parent;
     }
   }
@@ -140,10 +162,10 @@ Move MCTS::UCT(board current_board, int current_move, int current_has_place, int
   int best_visits = 0;
   for (i = 0; i < (int)root->children.size(); i++)
   {
-    if (root->children[i]->visits > best_visits)
+    if (root->children[i]->wins > best_visits)
     {
       best_move = root->children[i]->move;
-      best_visits = root->children[i]->visits;
+      best_visits = root->children[i]->wins;
     }
   }
     
@@ -162,7 +184,7 @@ void MCTS::solve(board initial_board, int initial_move)
   root = new node();
   return;*/
 
-  list_moves.push_back(UCT(initial_board, initial_move, 0, 0));
+  list_moves.push_back(UCT(initial_board, initial_move, 0, 1));
 
   if (initial_move > 0)
   {
