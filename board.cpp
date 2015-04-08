@@ -314,9 +314,10 @@ vector<Move> Board::available_moves(board input_board, int player, int move, int
           {
             int c_x = j + dx_m[k], c_y = i + dy_m[k];
             
-            while (valid_square(input_board, c_x, c_y) && check_square(input_board, c_x, c_y) == -1 && valid_position(input_board, c_x, c_y, player))
+            while (valid_square(input_board, c_x, c_y) && check_square(input_board, c_x, c_y) == -1)
             {
-              list_moves.push_back(Move('m', (c_x + c_y * 8) + ((j + i * 8) << 12)));
+              if (valid_position(input_board, c_x, c_y, player))
+                list_moves.push_back(Move('m', (c_x + c_y * 8) + ((j + i * 8) << 12)));
               c_x += dx_m[k];
               c_y += dy_m[k];
             }
@@ -373,6 +374,34 @@ int Board::valid_position(board input_board, int position_x, int position_y, int
   for (i = 0; i < 2; i++)
     fl &= ((valid_square(input_board, position_x + dxD[i], position_y + dyD[i])) && (check_square(input_board, position_x + dxD[i], position_y + dyD[i]) == ocol));
   fl &= ((valid_square(input_board, position_x - 1, position_y - 1)) && (check_square(input_board, position_x - 1, position_y - 1) == mcol));
+
+  // Check:
+  // ox
+  // x.
+  dxD[1] = -1;
+  dyD[0] = 1;
+
+  int fl = 1;
+  for (i = 0; i < 2; i++)
+    fl &= ((valid_square(input_board, position_x + dxD[i], position_y + dyD[i])) && (check_square(input_board, position_x + dxD[i], position_y + dyD[i]) == ocol));
+  fl &= ((valid_square(input_board, position_x - 1, position_y + 1)) && (check_square(input_board, position_x - 1, position_y + 1) == mcol));
+
+  if (fl)
+    return 0;
+
+  // Check:
+  // .x
+  // xo
+  dxD[1] = 1;
+  dyD[0] = -1;
+
+  int fl = 1;
+  for (i = 0; i < 2; i++)
+    fl &= ((valid_square(input_board, position_x + dxD[i], position_y + dyD[i])) && (check_square(input_board, position_x + dxD[i], position_y + dyD[i]) == ocol));
+  fl &= ((valid_square(input_board, position_x + 1, position_y - 1)) && (check_square(input_board, position_x + 1, position_y - 1) == mcol));
+
+  if (fl)
+    return 0;
 
   return !fl;
 }
