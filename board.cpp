@@ -5,6 +5,7 @@ int Board::dx_p[4] = {1, -1, 0, 0};
 int Board::dy_p[4] = {0, 0, 1, -1};
 int Board::dx_m[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
 int Board::dy_m[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
+map< pair<board, int>, vector<Move> > Board::mp;
 
 int Board::heuristic(board b) {
   //TODO: a better heuristic
@@ -42,9 +43,61 @@ int Board::heuristic(board b) {
 	other += sets.setSize(8*i+j);
   //effectively returns the difference of the sums of the squares of the length of each "chain"
   //could be done with dfs, but way more fun with UF
-  return mine-other;
+  return mine - other;
 }
 
+double Board::heuristic_2(board b) {
+  //TODO: a better heuristic
+
+  int cur_player = Board::valid_board_player(b);
+
+  if (win(b) == cur_player)
+    return 1;
+  else if (win(b) != -1)
+    return 0;
+
+  UnionFind sets(8*8);
+  int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1};
+  int dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
+  for (int i = 0; i < 8; i++)
+    for (int j = 0; j < 8; j++) {
+      if (Board::check_square(b, i, j) == -1)
+	continue;
+      for (int k = 0; k < 8; k++) {
+	int nx = i + dx[k];
+	int ny = j + dy[k];
+	if (nx < 0 || ny < 0 || nx >= 8 || ny >= 8)
+	  continue;
+	if (Board::check_square(b, i, j) == Board::check_square(b, nx, ny))
+	  sets.setUnion(i*8+j, nx*8+ny);
+      }
+    }
+  int mine = 0;
+  int other = 0;
+  for (int i = 0; i < 8; i++)
+    for (int j = 0; j < 8; j++)
+      if (Board::check_square(b, i, j) == cur_player)
+	mine += sets.setSize(8*i+j);
+      else if (Board::check_square(b, i, j) == !cur_player)
+	other += sets.setSize(8*i+j);
+  //effectively returns the difference of the sums of the squares of the length of each "chain"
+  //could be done with dfs, but way more fun with UF
+
+  int mn = 8;
+  int mx = -1;
+  for (int i = 0; i < 8; i++)
+    for (int j = 0; j < 8; j++)
+      if (Board::check_square(b, i, j) == cur_player)
+      {
+        int cor = cur_player ? j : i;
+	mn = min(mn, cor);
+        mx = max(mx, cor);
+      }
+
+  int dis = max(mx - mn, 0);
+
+  return 1 / (1 + exp(((double) mine - other) / 15)) * 1 / (1 + exp(1 / (dis * 2.0)) / 0.15);
+}
 
 int Board:: move_to_player(int move)
 {
@@ -235,6 +288,10 @@ char* Board::encode_move(Move move)
 
 vector<Move> Board::available_moves(board input_board, int player, int move, int can_place, int can_move)
 {
+  pair<board, int>hash = pair<board, int>(input_board, (player << 2) + max(move, 3) << 3 + can_place + can_move << 1);
+  if (mp.find(hash) != mp.end())
+    return mp[hash];
+
   vector<Move> list_moves;
   int i, j, k;
 
@@ -275,7 +332,7 @@ vector<Move> Board::available_moves(board input_board, int player, int move, int
       }
     }
 
-  return list_moves;
+  return mp[hash] = list_moves;
 }
 
 int Board::check_square(board input_board, int position_x, int position_y)

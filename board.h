@@ -24,6 +24,7 @@ class Board
   static int valid_board_player(board b);
   static int check_square(board input_board, int position_x, int position_y);
   static int heuristic(board b);
+  static double heuristic_2(board b);
 
   struct hash {
   public:
@@ -46,6 +47,7 @@ class Board
   static int valid_position(board input_board, int position_x, int position_y, int player);
   static int valid_place(board input_board, int position_x, int position_y, int player);
   static Move parse_string(char* input);
+  static map< pair<board, int>, vector<Move> > mp;
 };
 
 #endif

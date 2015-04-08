@@ -3,9 +3,11 @@
 struct MCTS::node
 {
   board state;
+  double heuristic_value;
   vector<Move> untried_moves;
   vector<node*> children;
   Move move;
+  double uct_value;
   int move_number;
   int has_move, has_place;
   int wins, visits;
@@ -14,7 +16,7 @@ struct MCTS::node
 
 MCTS::MCTS()
 {
-  max_iterations = 2500;
+  max_iterations = 1500;
   UCTK = 1;
 }
 
@@ -35,13 +37,14 @@ void MCTS::delete_nodes(node* current)
 
 Move MCTS::select_random_move(vector<Move> pos_moves, board current_board)
 {
-  int i, best_outcome = -1;
+  int i;
+  double best_outcome = 0;
   Move best_move;
   for (i = 0; i < 3; i++)
   {
     Move this_move = pos_moves[rand() % ((int)pos_moves.size())];
     board this_board = Board::make_move(current_board, this_move, Board::valid_board_player(current_board));
-    int this_outcome = Board::heuristic(this_board);
+    double this_outcome = Board::heuristic_2(this_board);
     if (this_outcome > best_outcome)
     {
       best_outcome = this_outcome;
@@ -55,12 +58,12 @@ Move MCTS::select_random_move(vector<Move> pos_moves, board current_board)
 MCTS::node* MCTS::UCT_select_child(node* current)
 {
   node* next;
-  double score_value = -1;
+  double score_value = -100;
   int i;
 
   for (i = 0; i < (int)current->children.size(); i++)
   {
-    double current_score = current->children[i]->wins / ((double) current->children[i]->visits) + UCTK * sqrt(2 * log(current->visits) / ((double) current->children[i]->visits));
+    double current_score = current->children[i]->uct_value;
 
     if (current_score > score_value)
     {
@@ -100,10 +103,11 @@ Move MCTS::UCT(board current_board, int current_move, int current_has_place, int
 
       node* new_node = new node();
       new_node->state = new_board;
+      new_node->heuristic_value = Board::heuristic_2(new_node->state);
       new_node->move_number = current->move_number + 1;
       new_node->move = current->untried_moves[next_move];
-      new_node->wins = 0;
-      new_node->visits = 0;
+      new_node->wins = new_node->heuristic_value * 20;
+      new_node->visits = 20;
 
       new_node->has_move = current->untried_moves[next_move].first == 'm';
       new_node->has_place = current->untried_moves[next_move].first == 'p';
@@ -154,6 +158,10 @@ Move MCTS::UCT(board current_board, int current_move, int current_has_place, int
     {
       current->visits++;
       current->wins += winner == Board::move_to_player(current->move_number);
+
+      if (current != root)
+        current->uct_value = 6 * current->heuristic_value / (((double) current->visits + 1)) +  current->wins / ((double) current->visits) + UCTK * sqrt(2 * log(current->parent->visits) / ((double) current->visits));
+
       current = current->parent;
     }
   }
