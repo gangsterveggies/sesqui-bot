@@ -328,7 +328,7 @@ vector<Move> Board::available_moves(board input_board, int player, int move, int
       }
       else
       {
-        if (check_square(input_board, j, i) == -1)
+        if (check_square(input_board, j, i) == -1 )
           list_moves.push_back(Move('p', (j + i * 8)));
       }
     }
@@ -381,7 +381,7 @@ int Board::valid_position(board input_board, int position_x, int position_y, int
   dxD[1] = -1;
   dyD[0] = 1;
 
-  int fl = 1;
+  fl = 1;
   for (i = 0; i < 2; i++)
     fl &= ((valid_square(input_board, position_x + dxD[i], position_y + dyD[i])) && (check_square(input_board, position_x + dxD[i], position_y + dyD[i]) == ocol));
   fl &= ((valid_square(input_board, position_x - 1, position_y + 1)) && (check_square(input_board, position_x - 1, position_y + 1) == mcol));
@@ -395,7 +395,7 @@ int Board::valid_position(board input_board, int position_x, int position_y, int
   dxD[1] = 1;
   dyD[0] = -1;
 
-  int fl = 1;
+  fl = 1;
   for (i = 0; i < 2; i++)
     fl &= ((valid_square(input_board, position_x + dxD[i], position_y + dyD[i])) && (check_square(input_board, position_x + dxD[i], position_y + dyD[i]) == ocol));
   fl &= ((valid_square(input_board, position_x + 1, position_y - 1)) && (check_square(input_board, position_x + 1, position_y - 1) == mcol));
@@ -436,9 +436,10 @@ int Board::win(board b) {
 
 bool Board::win(board b, int player) {
   //presumes a valid board
-  pair<int, int> cur, d[5];
+  pair<int, int> cur, d[8];
   queue<pair<int, int> > q;
   int v[8][8]; memset(v, 0, sizeof v);
+  d[0] = make_pair(-1, -1); d[1] = make_pair(-1, 0); d[2] = make_pair(-1, 1); d[3] = make_pair(0, -1); d[4] = make_pair(0, 1), d[5] = make_pair(1, -1), d[6] = make_pair(1, 0), d[7] = make_pair(1, 1);
 
   if (player) {
     //player 1 is horizontal
@@ -447,7 +448,6 @@ bool Board::win(board b, int player) {
 	q.push(make_pair(0,i));
 	v[0][i] = 1;
       }
-    d[0] = make_pair(1, 0); d[1] = make_pair(1, -1); d[2] = make_pair(1, 1); d[3] = make_pair(0, 1); d[4] = make_pair(0, -1);
   }
   else {
     //player 0 is vertical
@@ -456,14 +456,13 @@ bool Board::win(board b, int player) {
 	q.push(make_pair(i,0));
 	v[i][0] = 1;
       }
-    d[0] = make_pair(0, 1); d[1] = make_pair(-1, 1); d[2] = make_pair(1, 1); d[3] = make_pair(1, 0); d[3] = make_pair(-1, 0);
   }
 
   //bfs with (8*8)/2 iterations on worst case 
   while (!q.empty()) {
     cur = q.front(); q.pop();
     
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 8; i++) {
       int nx = cur.first + d[i].first;
       int ny = cur.second + d[i].second;
 
@@ -492,3 +491,30 @@ int Board::valid_board_player(board b) {
   return v != h+1 && (v || h); //1 if now is vertical's turn, 0 otherwise
 }
 
+int Board::can_move_piece(board input_board, int x1, int y1, int x2, int y2)
+{
+  if (!valid_square(input_board, x1, y1))
+      return 0;
+  if (!valid_square(input_board, x2, y2))
+      return 0;
+
+  int player = check_square(input_board, x1, y1);
+
+  if (x1 == x2 && y1 == y2)
+    return 0;
+   
+  input_board.first ^= (1LL << (x1 + y1 * 8));
+
+  return (valid_square(input_board, x2, y2) && check_square(input_board, x2, y2) == -1 && valid_position(input_board, x2, y2, player));
+}
+
+int Board::can_place_piece(board input_board, int x1, int y1, int player, int move)
+{
+  if (!valid_square(input_board, x1, y1))
+      return 0;
+
+  if (move < 3)
+    return check_square(input_board, x1, y1) == -1;
+
+  return !(input_board.first & (1LL << (x1 + y1 * 8))) && (valid_position(input_board, x1, y1, player) && valid_place(input_board, x1, y1, player));
+}

@@ -17,6 +17,7 @@
 
 using namespace std;
 
+typedef pair<int, int> pii;
 typedef pair<char, int> Move;
 
 /*
