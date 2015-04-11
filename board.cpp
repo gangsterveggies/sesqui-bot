@@ -3,8 +3,9 @@
 char Board::output[40];
 int Board::dx_p[4] = {1, -1, 0, 0};
 int Board::dy_p[4] = {0, 0, 1, -1};
-int Board::dx_m[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
-int Board::dy_m[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
+int Board::dx_m[8] = {1, -1, 0, 0, 1, 1, -1, -1};
+int Board::dy_m[8] = {0, 0, 1, -1, 1, -1, 1, -1};
+
 map< pair<board, int>, vector<Move> > Board::mp;
 
 int Board::heuristic(board b) {
@@ -46,57 +47,90 @@ int Board::heuristic(board b) {
   return mine - other;
 }
 
-double Board::heuristic_2(board b) {
-  //TODO: a better heuristic
-
+double Board::heuristic_2(board b)
+{
   int cur_player = Board::valid_board_player(b);
 
-  if (win(b) == cur_player)
+  int res = win(b);
+  if (res == cur_player)
     return 1;
-  else if (win(b) != -1)
+  else if (res != -1)
     return 0;
 
-  UnionFind sets(8*8);
-  int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1};
-  int dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
-  for (int i = 0; i < 8; i++)
-    for (int j = 0; j < 8; j++) {
-      if (Board::check_square(b, i, j) == -1)
-	continue;
-      for (int k = 0; k < 8; k++) {
-	int nx = i + dx[k];
-	int ny = j + dy[k];
-	if (nx < 0 || ny < 0 || nx >= 8 || ny >= 8)
-	  continue;
-	if (Board::check_square(b, i, j) == Board::check_square(b, nx, ny))
-	  sets.setUnion(i*8+j, nx*8+ny);
-      }
-    }
-  int mine = 0;
-  int other = 0;
-  for (int i = 0; i < 8; i++)
-    for (int j = 0; j < 8; j++)
-      if (Board::check_square(b, i, j) == cur_player)
-	mine += sets.setSize(8*i+j);
-      else if (Board::check_square(b, i, j) == !cur_player)
-	other += sets.setSize(8*i+j);
-  //effectively returns the difference of the sums of the squares of the length of each "chain"
-  //could be done with dfs, but way more fun with UF
+  int mdis = calc_dis(b, cur_player);
+  int odis = calc_dis(b, 1 - cur_player);
+//  printf("%d - %d\n", mdis, odis);
 
-  int mn = 8;
-  int mx = -1;
-  for (int i = 0; i < 8; i++)
-    for (int j = 0; j < 8; j++)
-      if (Board::check_square(b, i, j) == cur_player)
+  int delta = odis - mdis;
+
+  return 1 / (1 + exp(-delta / 3.0));
+}
+
+int Board::calc_dis(board b, int player)
+{
+  pair<int, pii> cur;
+  list<pair<int, pii> > q;
+  int v[8][8]; memset(v, 0, sizeof v);
+
+  if (player)
+  {
+    //player 1 is horizontal
+    for (int i = 0; i < 8; i++)
+      if (check_square(b, 0, i) != 1 - player)
       {
-        int cor = cur_player ? j : i;
-	mn = min(mn, cor);
-        mx = max(mx, cor);
+        q.push_back(make_pair(check_square(b, 0, i) == -1, pii(0, i)));
+        v[0][i] = 1;
       }
+  }
+  else
+  {
+    //player 0 is vertical
+    for (int i = 0; i < 8; i++)
+      if (check_square(b, i, 0) != 1 - player)
+      {
+	q.push_back(make_pair(check_square(b, i, 0) == -1, pii(i, 0)));
+	v[i][0] = 1;
+      }
+  }
 
-  int dis = max(mx - mn, 0);
+  while (!q.empty())
+  {
+    cur = q.front();
+    q.pop_front();
 
-  return 1 / (1 + exp(((double) mine - other) / 15)) * 1 / (1 + exp(1 / (dis * 2.0)) / 0.15);
+    int mx = 4;
+    if (check_square(b, cur.second.first, cur.second.second) == player)
+      mx = 8;
+    
+    for (int i = 0; i < mx; i++)
+    {
+      int nx = cur.second.first + dx_m[i];
+      int ny = cur.second.second + dy_m[i];
+
+      if (nx < 0 || ny < 0 || nx >= 8 || ny >= 8 || v[nx][ny])
+	continue;
+
+      int vl = check_square(b, nx, ny);
+      if (vl == 1 - player)
+        continue;
+      if (vl == -1 && i >= 4)
+        continue;
+
+      if ((player && nx == 7) || (!player && ny == 7))
+	return cur.first;
+
+      int delta = vl == -1;
+
+      if (delta == 0)
+        q.push_front(make_pair(cur.first, pii(nx, ny)));
+      else
+        q.push_back(make_pair(cur.first + 1, pii(nx, ny)));
+
+      v[nx][ny] = 1;
+    }
+  }
+
+  return 1000;
 }
 
 int Board:: move_to_player(int move)
@@ -375,6 +409,9 @@ int Board::valid_position(board input_board, int position_x, int position_y, int
     fl &= ((valid_square(input_board, position_x + dxD[i], position_y + dyD[i])) && (check_square(input_board, position_x + dxD[i], position_y + dyD[i]) == ocol));
   fl &= ((valid_square(input_board, position_x - 1, position_y - 1)) && (check_square(input_board, position_x - 1, position_y - 1) == mcol));
 
+  if (fl)
+    return 0;
+
   // Check:
   // ox
   // x.
@@ -399,9 +436,6 @@ int Board::valid_position(board input_board, int position_x, int position_y, int
   for (i = 0; i < 2; i++)
     fl &= ((valid_square(input_board, position_x + dxD[i], position_y + dyD[i])) && (check_square(input_board, position_x + dxD[i], position_y + dyD[i]) == ocol));
   fl &= ((valid_square(input_board, position_x + 1, position_y - 1)) && (check_square(input_board, position_x + 1, position_y - 1) == mcol));
-
-  if (fl)
-    return 0;
 
   return !fl;
 }

@@ -26,7 +26,7 @@ class MCTS : public Search
   Move select_random_move(board current_board, vector<pii> pieces, int player, int move, int can_place, int can_move);
 //  Move select_random_move(vector<Move> pos_moves, board current_board);
   node* UCT_select_child(node* current);
-  Move UCT(board current_board, int current_move, int current_has_place, int current_has_move);
+  Move UCT(node* initial_node, board current_board, int current_move, int current_has_place, int current_has_move);
 };
 
 #endif

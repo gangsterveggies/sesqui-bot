@@ -16,8 +16,8 @@ struct MCTS::node
 
 MCTS::MCTS()
 {
-  max_iterations = 20000;
-  UCTK = 1;
+  max_iterations = 5000;
+  UCTK = 0.2;
 }
 
 MCTS::~MCTS()
@@ -60,11 +60,11 @@ Move MCTS::select_random_move(board current_board, vector<pii> pieces, int playe
       p = rand() % ((int) pieces.size());
       x = (rand() % 3) - 1, y = (rand() % 3) - 1, av = rand() % 7 + 1;
       iter++;
-      if (iter == 30)
+      if (iter == 20)
         break;
     }
 
-    if (iter == 30)
+    if (iter == 20)
       return select_random_move(current_board, pieces, player, move, can_place, 0);
 
     glob_p = p;
@@ -84,11 +84,11 @@ Move MCTS::select_random_move(board current_board, vector<pii> pieces, int playe
       p = rand() % ((int) pieces.size());
       x = (rand() % 3) - 1, y = (rand() % 3) - 1, pos = rand() % 2;
       iter++;
-      if (iter == 30)
+      if (iter == 20)
         break;
     }
 
-    if (iter == 30)
+    if (iter == 20)
       return select_random_move(current_board, pieces, player, move, 0, can_move);
 
     best_move.second = pieces[p].first + x * pos + (pieces[p].second + y * (1 - pos)) * 8;
@@ -132,16 +132,19 @@ MCTS::node* MCTS::UCT_select_child(node* current)
   return next;
 }
 
-Move MCTS::UCT(board current_board, int current_move, int current_has_place, int current_has_move)
+Move MCTS::UCT(node* initial_node, board current_board, int current_move, int current_has_place, int current_has_move)
 {
   int i;
 
-  root = new node();
-  root->state = current_board;
-  root->move_number = current_move;
-  root->has_move = current_has_move;
-  root->has_place = current_has_place;
-  root->untried_moves = Board::available_moves(root->state, Board::move_to_player(current_move), current_move, !root->has_place, !root->has_move);
+  if (initial_node == NULL)
+  {
+    root = new node();
+    root->state = current_board;
+    root->move_number = current_move;
+    root->has_move = current_has_move;
+    root->has_place = current_has_place;
+    root->untried_moves = Board::available_moves(root->state, Board::move_to_player(current_move), current_move, !root->has_place, !root->has_move);
+  }
   root->parent = NULL;
 
   for (i = 0; i < max_iterations; i++)
@@ -164,8 +167,8 @@ Move MCTS::UCT(board current_board, int current_move, int current_has_place, int
       new_node->heuristic_value = Board::heuristic_2(new_node->state);
       new_node->move_number = current->move_number + 1;
       new_node->move = current->untried_moves[next_move];
-      new_node->wins = (1 - new_node->heuristic_value) * 10;
-      new_node->visits = 10;
+      new_node->wins = new_node->heuristic_value * 60;
+      new_node->visits = 60;
 
       new_node->has_move = current->untried_moves[next_move].first == 'm';
       new_node->has_place = current->untried_moves[next_move].first == 'p';
@@ -197,14 +200,37 @@ Move MCTS::UCT(board current_board, int current_move, int current_has_place, int
         if (Board::check_square(new_board, x, y) != -1)
           pieces[Board::check_square(new_board, x, y)].push_back(pii(x, y));
 
-    int l = 0;
-    while (Board::win(new_board) == -1)
+    int l = 0, j;
+    while (l++ < 20 && ((int) pieces[0].size()) + ((int) pieces[1].size()) < 64) //Board::win(new_board) == -1)
     {
       int player = Board::move_to_player(current_move);
+      board old_board = new_board, another_board;
+      Move another_move;
+      double another_board_heuristic;
+
       Move next_move = select_random_move(new_board, pieces[player], player, current_move, !has_place, !has_move);
       if (next_move.first == 'n')
         break;
-      new_board = Board::make_move(new_board, next_move, player);
+
+      new_board = Board::make_move(old_board, next_move, player);
+      double new_board_heuristic = Board::heuristic_2(new_board);
+
+      for (j = 0; j < 3; j++)
+      {
+        Move another_move = select_random_move(new_board, pieces[player], player, current_move, !has_place, !has_move);
+        if (another_move.first == 'n')
+          break;
+
+        another_board = Board::make_move(old_board, another_move, player);
+        another_board_heuristic = Board::heuristic_2(another_board);
+        if (another_board_heuristic > new_board_heuristic)
+        {
+          new_board_heuristic = another_board_heuristic;
+          next_move = another_move;
+        }
+      }
+
+      new_board = Board::make_move(old_board, next_move, player);
 
       has_move = next_move.first == 'm';
       has_place = next_move.first == 'p';
@@ -230,9 +256,6 @@ Move MCTS::UCT(board current_board, int current_move, int current_has_place, int
         printf("%d\n", Board::win(new_board));
       }*/
 
-      if (l++ == 30)
-        break;
-
       if (next_move.first == 'm')
         pieces[player][glob_p] = pii(new_place % 8, new_place / 8);
       else
@@ -243,7 +266,7 @@ Move MCTS::UCT(board current_board, int current_move, int current_has_place, int
 
     int winner = Board::win(new_board);
     if (winner == -1)
-      winner = Board::heuristic_2(new_board) > 0.5;
+      winner = Board::heuristic_2(new_board) > 0.5 ? Board::valid_board_player(new_board) : 1 - Board::valid_board_player(new_board);
 
     while (current != NULL)
     {
@@ -251,7 +274,7 @@ Move MCTS::UCT(board current_board, int current_move, int current_has_place, int
       current->wins += winner == Board::move_to_player(current->move_number);
 
       if (current != root)
-        current->uct_value = 6 * (1 - current->heuristic_value) / (((double) current->visits + 1)) +  current->wins / ((double) current->visits) + UCTK * sqrt(2 * log(current->parent->visits) / ((double) current->visits));
+        current->uct_value = 8 * (current->heuristic_value - 0.5) / (((double) current->visits + 1)) +  current->wins / ((double) current->visits) + UCTK * sqrt(log(current->parent->visits) / ((double) current->visits));
 
       current = current->parent;
     }
@@ -261,11 +284,17 @@ Move MCTS::UCT(board current_board, int current_move, int current_has_place, int
   int best_visits = 0;
   for (i = 0; i < (int)root->children.size(); i++)
   {
-    if (root->children[i]->wins > best_visits)
+    if (root->children[i]->visits > best_visits)
     {
       best_move = root->children[i]->move;
-      best_visits = root->children[i]->wins;
+      best_visits = root->children[i]->visits;
     }
+
+//    printf("%s\n", Board::encode_move(root->children[i]->move));
+//    printf("%d %d\n", root->children[i]->wins, root->children[i]->visits);
+
+    if (root->children[i]->heuristic_value == 1.0)
+      return root->children[i]->move;
   }
     
   return best_move;
@@ -273,23 +302,31 @@ Move MCTS::UCT(board current_board, int current_move, int current_has_place, int
 
 void MCTS::solve(board initial_board, int initial_move)
 {
-/*  printf("%d\n", Board::win(initial_board));
+/*
+  printf("%d\n", Board::valid_board_player(initial_board));
   Board::print_board(initial_board);
-  vector<Move> tmp = Board::available_moves(initial_board, Board::move_to_player(initial_move), initial_move, 0, 1);
-  for (int i = 0; i < (int)tmp.size(); i++)
-    printf("%s - ", Board::encode_move(tmp[i]));
-  printf("\n\n");
+  printf("%lf\n", Board::heuristic_2(initial_board));
 
   root = new node();
   return;*/
 
-  list_moves.push_back(UCT(initial_board, initial_move, 0, 1));
+  list_moves.push_back(UCT(NULL, initial_board, initial_move, 0, 0));
 
   if (initial_move > 0)
   {
-    delete_nodes(root);
+//    delete_nodes(root);
+    for (int i = 0; i < (int)root->children.size(); i++)
+    {
+      if (root->children[i]->move == list_moves[0])
+      {
+        root = root->children[i];
+        delete root->parent;
+        break;
+      }
+    }
+
     initial_board = Board::make_move(initial_board, list_moves[0], Board::move_to_player(initial_move));
 
-    list_moves.push_back(UCT(initial_board, initial_move + 1, list_moves[0].first == 'p', list_moves[0].first == 'm'));
+    list_moves.push_back(UCT(root, initial_board, initial_move + 1, list_moves[0].first == 'p', list_moves[0].first == 'm'));
   }
 }

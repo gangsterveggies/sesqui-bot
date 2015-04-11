@@ -25,6 +25,7 @@ class Board
   static int check_square(board input_board, int position_x, int position_y);
   static int heuristic(board b);
   static double heuristic_2(board b);
+  static int calc_dis(board b, int player);
   static int can_move_piece(board input_board, int x1, int y1, int x2, int y2);
   static int can_place_piece(board input_board, int x1, int y1, int player, int move);
 
