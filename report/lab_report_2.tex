@@ -1,0 +1,243 @@
+%----------------------------------------------------------------------------------------
+%	CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[12pt,a4paper,oneside]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{natbib}
+\usepackage{amsmath}
+\usepackage{lipsum}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[a4paper,left=2cm,right=2cm,top=2.5cm,bottom=2.5cm]{geometry}
+
+%----------------------------------------------------------------------------------------
+%	INFORMATION
+%----------------------------------------------------------------------------------------
+
+\title{Métodos de pesquisa no jogo de Sesqui\\
+  \vspace{0.1in}
+  \large{Inteligência Artificial - Trabalho 2}
+}
+
+\author{Miguel Ferreira\footnote{Miguel Ferreira - 201304200}, Pedro Paredes\footnote{Pedro Paredes - 201205725}, DCC - FCUP}
+
+\date{Abril 2015}
+
+\renewcommand{\tablename}{Tabela}
+\renewcommand{\figurename}{Figura}
+\renewcommand{\refname}{Referências}
+
+\begin{document}
+
+\maketitle
+
+%----------------------------------------------------------------------------------------
+%	SECTION 1
+%----------------------------------------------------------------------------------------
+
+\section{Introdução}
+\label{sec:intro}
+
+\lipsum[1]
+
+\lipsum[2]
+
+\lipsum[3]
+
+\lipsum[4]
+
+%----------------------------------------------------------------------------------------
+%	SECTION 2
+%----------------------------------------------------------------------------------------
+
+\section{Algoritmos e Conceitos de Pesquisa em Jogos \textit{zero-sum}}
+\label{sec:algconc}
+
+\cite{Dutra:2015}
+\lipsum[1]
+
+\lipsum[2]
+
+\lipsum[3]
+
+\subsection{O Teorema e o Algoritmo Minimax}
+
+\lipsum[1]
+
+\lipsum[2]
+
+\lipsum[3]
+
+\lipsum[4]
+
+\subsubsection{O Negamax}
+
+\lipsum[1]
+
+\lipsum[2]
+
+\subsection{O Método \textit{Alpha-Beta Pruning}}
+
+\lipsum[1]
+
+\lipsum[2]
+
+\lipsum[3]
+
+\lipsum[4]
+
+\lipsum[5]
+
+\lipsum[6]
+
+\subsubsection{Otimizações Comuns}
+
+%(http://chessprogramming.wikispaces.com/Alpha-Beta#Enhancements)
+%(http://www.arimaa.com/arimaa/papers/ThomasJakl/bc-thesis.pdf Section 3.1)
+
+Tópicos: Transposition Table, Iterative Deepening, Aspiration Windows, Move ordering, Quiescence Search
+Referir: NegaScout
+
+\lipsum[1]
+
+\lipsum[2]
+
+\lipsum[3]
+
+\lipsum[4]
+
+\lipsum[5]
+
+\subsection{\textit{Monte Carlo Tree Search}}
+
+\lipsum[1]
+
+\lipsum[2]
+
+\lipsum[3]
+
+\subsubsection{\textit{Upper Confidence Bounds} e o \textit{Multi-Armed Bandit}}
+
+\lipsum[1]
+
+\lipsum[2]
+
+\subsubsection{Heurísticas: \textit{Heavy} e \textit{Light} \textit{Playouts}}
+
+\lipsum[1]
+
+\lipsum[2]
+
+\subsubsection{Otimizações Comuns}
+
+%(http://www.arimaa.com/arimaa/papers/ThomasJakl/bc-thesis.pdf Section 3.2)
+%(http://arimaa.com/arimaa/papers/TomasKozelekThesis/mt.pdf Section 3.3)
+
+Tópicos: Transposition Tables, Progressive bias, History heuristics, Best-of-N, Virtual Visits, Children Caching, Maturity Threshold
+Referir: RAVE
+
+\lipsum[1]
+
+\lipsum[2]
+
+\lipsum[3]
+
+\lipsum[4]
+
+\lipsum[5]
+
+%----------------------------------------------------------------------------------------
+%	SECTION 2
+%----------------------------------------------------------------------------------------
+
+
+\section{O Jogo de Sesqui}
+\label{sec:sesqui}
+
+(Porque escolhemos o jogo)
+
+\lipsum[1]
+
+\subsection{Regras do Jogo}
+
+\lipsum[1]
+
+\lipsum[2]
+
+\lipsum[3]
+
+\subsection{Alguns Resultados sobre o Jogo}
+
+(Numero de tabuleiros, empates, vantagem do segundo)
+
+\lipsum[1]
+
+\lipsum[2]
+
+\subsection{Intuição para a Implementação}
+
+\lipsum[1]
+
+\lipsum[2]
+
+%----------------------------------------------------------------------------------------
+%	SECTION 3
+%----------------------------------------------------------------------------------------
+
+\section{Implementação}
+\label{sec:imp}
+
+\lipsum[1]
+
+\subsection{Minimax}
+
+\lipsum[1]
+
+\lipsum[2]
+
+\subsection{\textit{MCTS}}
+
+\lipsum[1]
+
+\lipsum[2]
+
+\lipsum[3]
+
+\subsection{Heurísticas}
+
+\lipsum[1]
+
+\lipsum[2]
+
+\lipsum[3]
+
+%----------------------------------------------------------------------------------------
+%	SECTION 4
+%----------------------------------------------------------------------------------------
+
+\section{Resultados e Desempenho}
+\label{sec:resdes}
+
+\lipsum[1]
+
+\lipsum[2]
+
+\lipsum[3]
+
+\section{Comclusão e Trabalho Futuro}
+\label{sec:conc}
+
+Paralelismo, Otimizações no AB, MC-AB (juntar os dois)
+
+\lipsum[1]
+
+\lipsum[2]
+
+\bibliographystyle{plain}
+\bibliography{lab_report_2}
+
+\end{document}
