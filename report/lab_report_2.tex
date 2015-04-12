@@ -108,19 +108,19 @@ O algoritmo de Minimax aplica a ideia descrita pelo teorema através de uma busc
   \If{\Call{Terminal}{$Node$}} \Return{\Call{Value}{$Node$}}
   \EndIf
   \If{$Player=min$}
-      \State $m \gets \infty$
+      \State $best \gets \infty$
       \For{$son$ in \Call{Successors}{$Node$}}
           \State $next \gets$ \Call{Minimax}{$son$, $max$}
-          \State $m \gets$ \Call{Min}{$m$, $next$}
+          \State $best \gets$ \Call{Min}{$m$, $next$}
       \EndFor
   \ElsIf{$Player=max$}
-      \State $m \gets -\infty$
+      \State $best \gets -\infty$
       \For{$son$ in \Call{Successors}{$Node$}}
           \State $next \gets$ \Call{Minimax}{$son$, $min$}
-          \State $m \gets$ \Call{Max}{$m$, $next$}
+          \State $best \gets$ \Call{Max}{$m$, $next$}
       \EndFor
   \EndIf
-  \State\Return{m} 
+  \State\Return{$best$} 
 \EndFunction
 \end{algorithmic}
 \caption{Algoritmo de Minimax}
