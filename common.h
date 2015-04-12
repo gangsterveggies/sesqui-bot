@@ -14,6 +14,7 @@
 #include <time.h>
 
 #define INF 1e30
+#define DEBUG(...) fprintf(stderr, __VA_ARGS__)
 
 using namespace std;
 
