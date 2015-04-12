@@ -19,20 +19,19 @@ void AB::solve(board initial_board, int initial_move, int mdepth) {
 }
 
 void AB::solve(board initial_board, int initial_move) {
-  int v;
+  pair<double, board> v;  
   cur_player = Board::valid_board_player(initial_board);
-  /*
   if (cur_player)
     v = MinValue(initial_board, -INF, INF);
-    else*/
-  v = MaxValue(initial_board, -INF, INF);
-
-  for (auto it : Successors(initial_board)) {
-    if (value(applyMoves(initial_board, it, cur_player)) == v) {
+  else  
+    v = MaxValue(initial_board, -INF, INF);
+  DEBUG("Utility %lf\n", v.first);
+  for (auto it : Successors(initial_board))
+    if (applyMoves(initial_board, it, cur_player) == v.second) {
       list_moves = it;
-      break;
+      return;
     }
-  }
+  DEBUG("Catastrophic error! Move not found\n");
 }
 
 board AB::applyMoves(board b, vector<Move> m, int player) {
@@ -43,13 +42,9 @@ board AB::applyMoves(board b, vector<Move> m, int player) {
 }
 
 vector<vector<Move> > AB::Successors(board b) {
-  //if (sons.find(b) != sons.end())
-  //return sons[b];
-
   vector<Move> r1;
   vector<vector<Move> > r;
   int player = Board::valid_board_player(b);
-  player = 1;
 
   int npieces = 0;
   for (int i = 0; i < 64; i++)
@@ -69,68 +64,68 @@ vector<vector<Move> > AB::Successors(board b) {
       }
   }
   return r;
-  //return sons[b] = r;
 }
 
-int AB::MaxValue(board b, int alpha, int beta) {
-  if (val.find(b) != val.end())
-    return value(b);
+pair<double, board> AB::MaxValue(board b, double alpha, double beta) {
+  //DEBUG("Entering MAX\n");
   cur_depth++;
   if (TerminalTest(b)) {
     cur_depth--;
-    return Utility(b);
+    return make_pair(Utility(b), b);
   }
 
-  int v = -INF;
+  pair<double, board> v = make_pair(-INF, b);
   for (auto it : Successors(b)) {
-    v = max(v, MinValue(applyMoves(b, it, cur_player), alpha, beta));
-    if (v >= beta) {
+    pair<double, board> other = MinValue(applyMoves(b, it, !cur_player), alpha, beta);
+    if (other > v) {
+      v = other;
+      v.second = applyMoves(b, it, !cur_player);
+    }
+    if (v.first >= beta) {
       cur_depth--;
       return v;
     }
-    alpha = max(alpha, v);
+    alpha = max(alpha, v.first);
   }
   cur_depth--;
   return v;
 }
 
-int AB::MinValue(board b, int alpha, int beta) {
-  if (val.find(b) != val.end())
-    return value(b);
+pair<double, board> AB::MinValue(board b, double alpha, double beta) {
+  //DEBUG("Entering MIN\n");
   cur_depth++;
   if (TerminalTest(b)) {
     cur_depth--;
-    return Utility(b);
+    return make_pair(Utility(b), b);
   }
 
-  int v = INF;
+  pair<double, board> v = make_pair(INF, b);
   for (auto it : Successors(b)) {
-    v = min(v, MaxValue(applyMoves(b, it, !cur_player), alpha, beta));
-    if (v <= alpha) {
+    pair<double, board> other = MaxValue(applyMoves(b, it, cur_player), alpha, beta);
+    if (other < v) {
+      v = other;
+      v.second = applyMoves(b, it, cur_player);
+    }
+    if (v.first <= alpha) {
       cur_depth--;
       return v;
     }
-    beta = min(beta, v);
+    beta = min(alpha, v.first);
   }
   cur_depth--;
   return v;
 }
 
-int AB::Utility(board b) {
-  if (Board::win(b) == 0)
-    return val[b] = 8*8;
-  else if (Board::win(b) == 1)
-    return val[b] = -8*8;
-
-  if (cur_depth >= max_depth)
-    return val[b] = Board::heuristic(b);
-  return 0;
+double AB::Utility(board b) {
+  if (Board::win(b) == 1)
+    return -1.0;
+  else if (Board::win(b) == 0)
+    return 1.0;
+  return Board::heuristic_2(b);
 }
 
-int AB::value(board b) {
-  if (val.find(b) != val.end())
-    return val[b];
-  return 0;
+double AB::value(board b) {
+  return Utility(b);
 }
 
 bool AB::TerminalTest(board b) {
