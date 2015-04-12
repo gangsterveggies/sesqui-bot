@@ -111,30 +111,40 @@ O algoritmo de Minimax aplica a ideia descrita pelo teorema através de uma busc
       \State $best \gets \infty$
       \For{$son$ in \Call{Successors}{$Node$}}
           \State $next \gets$ \Call{Minimax}{$son$, $max$}
-          \State $best \gets$ \Call{Min}{$m$, $next$}
+          \State $best \gets$ \Call{Min}{$best$, $next$}
       \EndFor
   \ElsIf{$Player=max$}
       \State $best \gets -\infty$
       \For{$son$ in \Call{Successors}{$Node$}}
           \State $next \gets$ \Call{Minimax}{$son$, $min$}
-          \State $best \gets$ \Call{Max}{$m$, $next$}
+          \State $best \gets$ \Call{Max}{$best$, $next$}
       \EndFor
   \EndIf
   \State\Return{$best$} 
 \EndFunction
 \end{algorithmic}
-\caption{Algoritmo de Minimax}
+\caption{Algoritmo Minimax}
 \end{algorithm}
-
-%\lipsum[3]
-
-%\lipsum[4]
 
 \subsubsection{O Negamax}
 
-\lipsum[1]
+O algoritmo Negamax é uma variante simplificada do Minimax para jogos que verificam uma simetria entre os valores do estado para cada um dos jogadores. Sendo assim, é possível minimizar ou maximizar valores do oponente através da negação do valor Negamax da jogada seguinte.
 
-\lipsum[2]
+\begin{algorithm}
+\begin{algorithmic}
+\Function{Negamax}{$Node$} \Comment{Devolve o valor do melhor nó seguinte}
+  \If{\Call{Terminal}{$Node$}} \Return{\Call{Value}{$Node$}}
+  \EndIf
+  \State $best \gets -\infty$
+  \For{$son$ in \Call{Successors}{$Node$}}
+      \State $next \gets -$\Call{Negamax}{$son$}
+      \State $best \gets$ \Call{Max}{$best$, $next$}
+  \EndFor
+  \State\Return{$best$} 
+\EndFunction
+\end{algorithmic}
+\caption{Algoritmo Negamax}
+\end{algorithm}
 
 \subsection{O Método \textit{Alpha-Beta Pruning}}
 
