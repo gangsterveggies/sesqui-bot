@@ -25,8 +25,13 @@ class MCTS : public Search
   int virtual_visits;
   int move_threshold;
   int place_threshold;
+  int cache_size;
+  int cache_threshold;
+  int cache_frequency;
 
   void delete_nodes(node* current);
+  double randomD();
+  void fill_cache(node* current);
   Move select_random_move(board current_board, vector<pii> pieces, int player, int move, int can_place, int can_move);
 //  Move select_random_move(vector<Move> pos_moves, board current_board);
   node* UCT_select_child(node* current);
