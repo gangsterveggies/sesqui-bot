@@ -18,7 +18,7 @@
 %	INFORMATION
 %----------------------------------------------------------------------------------------
 
-\title{Métodos de pesquisa no jogo de Sesqui\\
+\title{Métodos de pesquisa no jogo de \textit{Sesqui}\\
   \vspace{0.1in}
   \large{Inteligência Artificial - Trabalho 2}
 }
@@ -42,13 +42,41 @@
 \section{Introdução}
 \label{sec:intro}
 
-\lipsum[1]
+A existência de jogos surge naturalmente em muitas situações do
+quotidiano. Em economia uma interação entre duas ou mais entidades
+competidoras é normalmente vista como um jogo onde cada uma tenta
+maximizar o seu lucro ou proveito. Porém, qualquer situação onde haja
+cooperação ou conflito pode ser modelada como um jogo e as técnicas a
+aplicar são semelhantes. Pode-se dizer assim que o estudo de jogos é o
+estudo de processos de decisão.
 
-\lipsum[2]
+Neste relatório exploraremos um subconjunto muito específico de jogos,
+nomeadamente jogos determinísticos, discretos, de informação completa
+e \textit{zero-sum} (embora alguns dos métodos se apliquem a muitos
+outros tipos de jogos). A última característica é talvez a mais
+importante e o que diz, informalmente, é que ``a sorte de uns é a
+desgraça de outros'', o que significa que os recursos do jogo são
+contantes, ou seja, o ganho de um jogador é exatamente a perda dos
+seus oponentes. Mais especificamente explorar-se-á o jogo
+\textit{Sesqui}, que é um jogo de tabuleiro de 2 jogadores e que será
+descrito com maior pormenor numa secção futura.
 
-\lipsum[3]
+O objetivo do relatório é de estudar métodos que permitam jogar
+competitivamente jogos como os descritos a cima. Sendo assim
+exploram-se 3 métodos diferentes: o algoritmo \textit{Minimax}, o
+algoritmo de \textit{Alpha-Beta Pruning} e a \textit{Monte Carlo Tree
+  Search}.
 
-\lipsum[4]
+O resto do relatório está organizado da seguinte forma. Na Secção
+\ref{sec:algconc} apresentamos uma descrição teórica dos 3 métodos de
+otimizações comuns a cada um. Na Secção \ref{sec:sesqui} apresenta-se
+o jogo \textit{Sesqui}, alguns resultados relacionados assim como uma
+motivação para a implementação. Na Secção \ref{sec:imp} descreve-se a
+nossa implementação dos métodos da Secção \ref{sec:algconc} e como
+foram usados, assim como as heurísticas aplicadas ao
+\textit{Sesqui}. Na Secção \ref{sec:resdes} discutem-se os resultados
+e o desempenho da implementação. Finalmente, na Secção \ref{sec:conc}
+é feita uma nota final sobre o trabalho e o relatório.
 
 %----------------------------------------------------------------------------------------
 %	SECTION 2
@@ -151,7 +179,7 @@ Referir: RAVE
 \lipsum[5]
 
 %----------------------------------------------------------------------------------------
-%	SECTION 2
+%	SECTION 3
 %----------------------------------------------------------------------------------------
 
 
@@ -185,7 +213,7 @@ Referir: RAVE
 \lipsum[2]
 
 %----------------------------------------------------------------------------------------
-%	SECTION 3
+%	SECTION 4
 %----------------------------------------------------------------------------------------
 
 \section{Implementação}
@@ -216,7 +244,7 @@ Referir: RAVE
 \lipsum[3]
 
 %----------------------------------------------------------------------------------------
-%	SECTION 4
+%	SECTION 5
 %----------------------------------------------------------------------------------------
 
 \section{Resultados e Desempenho}
@@ -228,7 +256,11 @@ Referir: RAVE
 
 \lipsum[3]
 
-\section{Comclusão e Trabalho Futuro}
+%----------------------------------------------------------------------------------------
+%	SECTION 6
+%----------------------------------------------------------------------------------------
+
+\section{Conclusão e Trabalho Futuro}
 \label{sec:conc}
 
 Paralelismo, Otimizações no AB, MC-AB (juntar os dois)
