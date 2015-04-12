@@ -5,8 +5,31 @@ int Board::dx_p[4] = {1, -1, 0, 0};
 int Board::dy_p[4] = {0, 0, 1, -1};
 int Board::dx_m[8] = {1, -1, 0, 0, 1, 1, -1, -1};
 int Board::dy_m[8] = {0, 0, 1, -1, 1, -1, 1, -1};
+long long int Board::move_mask[8][8][8][8];
 
 map< pair<board, int>, vector<Move> > Board::mp;
+
+void Board::init()
+{
+  int x0, y0, k;
+  for (x0 = 0; x0 < 8; x0++)
+    for (y0 = 0; y0 < 8; y0++)
+      for (k = 0; k < 8; k++)
+      {
+        int c_x = x0 + dx_m[k];
+        int c_y = y0 + dy_m[k];
+
+        long long int mask = 0;
+        while (c_x >= 0 && c_y >= 0 && c_x < 8 && c_y < 8)
+        {
+          mask |= (1LL << (c_x + 8 * c_y));
+          move_mask[x0][y0][c_x][c_y] = mask;
+
+          c_x += dx_m[k];
+          c_y += dy_m[k];
+        }
+      }
+}
 
 int Board::heuristic(board b) {
   //TODO: a better heuristic
@@ -532,11 +555,14 @@ int Board::can_move_piece(board input_board, int x1, int y1, int x2, int y2)
   if (!valid_square(input_board, x2, y2))
       return 0;
 
-  int player = check_square(input_board, x1, y1);
-
   if (x1 == x2 && y1 == y2)
     return 0;
-   
+
+  if (move_mask[x1][y1][x2][y2] & input_board.first)
+    return 0;
+
+  int player = check_square(input_board, x1, y1);
+
   input_board.first ^= (1LL << (x1 + y1 * 8));
 
   return (valid_square(input_board, x2, y2) && check_square(input_board, x2, y2) == -1 && valid_position(input_board, x2, y2, player));

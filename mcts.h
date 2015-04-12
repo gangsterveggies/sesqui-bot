@@ -21,6 +21,7 @@ class MCTS : public Search
   double UCTK;
   node* root;
   int glob_p;
+  int maturity_threshold;
 
   void delete_nodes(node* current);
   Move select_random_move(board current_board, vector<pii> pieces, int player, int move, int can_place, int can_move);

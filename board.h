@@ -10,6 +10,7 @@ class Board
 
   static char output[40];
 
+  static void init();
   static int move_to_player(int move);
   static board string_to_board(char* input);
   static int string_to_moves(char* input);
@@ -45,6 +46,7 @@ class Board
   static int dy_p[4];
   static int dx_m[8];
   static int dy_m[8];
+  static long long int move_mask[8][8][8][8];
 
   static int valid_square(board input_board, int position_x, int position_y);
   static int valid_position(board input_board, int position_x, int position_y, int player);

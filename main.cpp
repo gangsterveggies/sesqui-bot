@@ -84,6 +84,7 @@ vector<Move> calculate()
   }
   else if (method_flag == 1)
   {
+    Board::init();
     engine = new MCTS();
   }
   else if (method_flag == 2)
