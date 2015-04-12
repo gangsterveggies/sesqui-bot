@@ -96,13 +96,15 @@ e o desempenho da implementação. Finalmente, na Secção \ref{sec:conc}
 \subsection{O Teorema e o Algoritmo Minimax}
 
 %Cite something about Von Neumann
-O teorema de Minimax garante a existência de um valor $V$ e de uma estratégia para cada jogador de um jogo \emph{zero-sum}, de maneiraa que o primeiro jogador tenha um \emph{payoff} ótimo de $V$ e o segundo um \emph{payoff} ótimo de $-V$, dadas as estratégias dos seus oponentes.
+O teorema de Minimax garante a existência de um valor $V$ e de uma estratégia para cada jogador de um jogo \emph{zero-sum}, de maneira a que o primeiro jogador tenha um \emph{payoff} ótimo de $V$ e o segundo um \emph{payoff} ótimo de $-V$, dadas as estratégias dos seus oponentes.
 
 O nome ``Minimax'' resulta da estratégia de minimizar o \emph{payoff} máximo do jogador oponente e, dado a soma-zero do jogo, maximizar o próprio \emph{payoff}.
 
+O algoritmo de Minimax aplica a ideia descrita pelo teorema através de uma busca em profundidade, devolvendo assim o melhor \emph{payoff} para o um dado estado do jogo. Este algoritmo tem complexidade exponencial de $O(b^{h})$, sendo $b$ o fator de ramificação do jogo e $h$ um limite superior do número máximo de jogadas.
+
 \begin{algorithm}
 \begin{algorithmic}
-\Function{Minimax}{$Node$, $Player$} \Comment{Devolve o valor do melhor nó seguinte}
+\Function{Minimax}{$Node$, $Player$} \Comment{Devolve o valor minimax do melhor nó seguinte}
   \If{\Call{Terminal}{$Node$}} \Return{\Call{Value}{$Node$}}
   \EndIf
   \If{$Player=min$}
