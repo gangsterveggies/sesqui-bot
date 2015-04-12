@@ -80,15 +80,18 @@ vector<Move> calculate()
 
   if (method_flag == 0)
   {
-    engine = new AB(4);
+    engine = new AB(3);
   }
   else if (method_flag == 1)
   {
     Board::init();
     engine = new MCTS();
   }
-  else if (method_flag == 2)
+  else if (method_flag == 2)  
   {
+    AB * minimax = new AB(3);
+    minimax->setPruning(false);
+    engine = minimax;
   }
   else
   {

@@ -14,11 +14,13 @@ public:
   AB(int mdepth);
   void solve(board initial_board, int initial_move);
   void solve(board initial_board, int initial_move, int mdepth);
+  void setPruning(bool value);
 
 private:
   int cur_depth;
   int cur_player;
   int max_depth;
+  bool pruning;
 
   //unordered_map<board, double, Board::hash> val;
 

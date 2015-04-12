@@ -3,6 +3,7 @@
 AB::AB() {
   cur_depth = 0;
   max_depth = 10;
+  pruning = true;
 }
 
 AB::AB(int mdepth){
@@ -11,6 +12,10 @@ AB::AB(int mdepth){
 }
 
 AB::~AB() {}
+
+void AB::setPruning(bool value) {
+  pruning = value;
+}
 
 void AB::solve(board initial_board, int initial_move, int mdepth) {
   swap(mdepth, max_depth);
@@ -21,8 +26,10 @@ void AB::solve(board initial_board, int initial_move, int mdepth) {
 void AB::solve(board initial_board, int initial_move) {
   pair<double, board> v;  
   cur_player = Board::valid_board_player(initial_board);
-  if (cur_player)
+  if (cur_player) {
+    DEBUG("Minimizing\n");
     v = MinValue(initial_board, -INF, INF);
+  }
   else  
     v = MaxValue(initial_board, -INF, INF);
   DEBUG("Utility %lf\n", v.first);
@@ -57,7 +64,7 @@ vector<vector<Move> > AB::Successors(board b) {
   if (npieces) {
     //second move
     for (auto m : r1)
-      for (auto mov : Board::available_moves(Board::make_move(b, m, player), player, npieces+(m.first=='p'), m.first != 'p' || npieces <= 2, m.first != 'm' && npieces >= 3)) {
+      for (auto mov : Board::available_moves(Board::make_move(b, m, player), player, npieces, m.first != 'p' || npieces <= 1, m.first != 'm' && npieces > 2)) {
 	vector<Move> v;
 	v.push_back(m); v.push_back(mov);
 	r.push_back(v);
@@ -88,11 +95,14 @@ pair<double, board> AB::MaxValue(board b, double alpha, double beta) {
       v = other;
       v.second = applyMoves(b, it, player);
     }
-    if (v.first >= beta) {
-      cur_depth--;
-      return v;
+
+    if (pruning) {
+      if (v.first >= beta) {
+	cur_depth--;
+	return v;
+      }
+      alpha = max(alpha, v.first);
     }
-    alpha = max(alpha, v.first);
   }
   cur_depth--;
   return v;
@@ -115,11 +125,14 @@ pair<double, board> AB::MinValue(board b, double alpha, double beta) {
       v = other;
       v.second = applyMoves(b, it, player);
     }
-    if (v.first <= alpha) {
-      cur_depth--;
-      return v;
+
+    if (pruning) {
+      if (v.first <= alpha) {
+	cur_depth--;
+	return v;
+      }
+      beta = min(alpha, v.first);
     }
-    beta = min(alpha, v.first);
   }
   cur_depth--;
   return v;
