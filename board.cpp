@@ -544,8 +544,9 @@ int Board::valid_board_player(board b) {
   int h = 0, v = 0;
   for (int i = 0; i < 8; i++)
     for (int j = 0; j < 8; j++) 
-      if(check_square(b, i, j)) v++; else h++;
-  return v != h+1 && (v || h); //1 if now is vertical's turn, 0 otherwise
+      if(check_square(b, i, j) == 0) v++; 
+      else if(check_square(b, i, j) == 1) h++;
+  return v+1 != h && (v || h); //1 if now is vertical's turn, 0 otherwise
 }
 
 int Board::can_move_piece(board input_board, int x1, int y1, int x2, int y2)
