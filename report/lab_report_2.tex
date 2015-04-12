@@ -88,10 +88,35 @@ e o desempenho da implementação. Finalmente, na Secção \ref{sec:conc}
 \section{Algoritmos e Conceitos de Pesquisa em Jogos \textit{zero-sum}}
 \label{sec:algconc}
 
-\cite{Dutra:2015}
-\lipsum[1]
+Existem várias maneiras de abordar um jogo. Para jogos mais simples
+como o \textit{Nim} existe uma estratégia vencedora, para a maior
+parte das posições iniciais, que se baseia num invariante do
+jogo. Para jogos que sejam facilmente decompostos em subjogos
+independentes, o teorema de \textit{Sprague-Grundy} pode ser usado
+para obter uma estratégia. Para certos jogos, como o \textit{Connect
+  Four} (conhecido em português pelo ``4 em linha'')
+\cite{Allis:1988}, foram aplicados conhecimentos de combinatória para
+resolver o jogo, ou seja, para obter uma estratégia vencedora do
+jogo.
 
-\lipsum[2]
+Porém, para a maior parte dos jogos, não é fácil obter resultados como
+estes. É necessário assim recorrer a métodos exaustivos, que enumeram
+os vários estados possíveis do jogo. Nesta secção descrevemos 3
+métodos com este comportamento. A ideia geral deste métodos é de a
+partir de uma configuração inicial enumerar as várias transições
+possíveis com o objetivo de explorar o espaço de estados disponível
+até chegar a posições terminais. Como este espaço de estados pode ser
+demasiado extenso, recorrem-se a heurísticas para medir o valor de
+configurações não terminais e assim efetua-se a pesquisa apenas até
+uma certa profundidade.
+
+Para simplificar a discussão nesta secção e nas próximas, introduzimos
+alguns termos a usar. Um estado de um jogo é chamado de configuração
+ou tabuleiro. O valor da função heurística para um determinado
+tabuleiro é chamada da função utilidade. O \textit{payoff} é o valor
+relativo de um tabuleiro (distinguimo-lo da função utilidade porque
+consideramo-lo um valor teórico, enquanto que a função utilidade é um
+valor empírico dado pela heurística).
 
 \subsection{O Teorema e o Algoritmo Minimax}
 
@@ -291,7 +316,7 @@ Referir: RAVE
 \section{Conclusão e Trabalho Futuro}
 \label{sec:conc}
 
-Paralelismo, Otimizações no AB, MC-AB (juntar os dois)
+Paralelismo, Otimizações no AB, MC-AB (juntar os dois)\cite{Dutra:2015}
 
 \lipsum[1]
 
