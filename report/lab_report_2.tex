@@ -125,11 +125,21 @@ métodos de pesquisa (uma árvore cujos elementos são nós, o nó inicial
 \subsection{O Teorema e o Algoritmo Minimax}
 
 %Cite something about Von Neumann
-O teorema de Minimax garante a existência de um valor $V$ e uma estratégia para cada jogador de um jogo \emph{zero-sum}, de maneira a que o primeiro jogador tenha um \emph{payoff} ótimo de $V$ e o segundo um \emph{payoff} ótimo de $-V$, dadas as estratégias dos seus oponentes.
+O teorema de \textit{Minimax} garante a existência de um valor $V$ e
+uma estratégia para cada jogador de um jogo \emph{zero-sum}, de
+maneira a que o primeiro jogador tenha um \emph{payoff} ótimo de $V$ e
+o segundo um \emph{payoff} ótimo de $-V$, dadas as estratégias dos
+seus oponentes.
 
-O nome ``Minimax'' resulta da estratégia de minimizar o \emph{payoff} máximo do jogador oponente e, dado a soma-zero do jogo, maximizar o próprio \emph{payoff}.
+O nome ``Minimax'' resulta da estratégia de minimizar o \emph{payoff}
+máximo do jogador oponente e, dado a soma-zero do jogo, maximizar o
+próprio \emph{payoff}.
 
-O algoritmo de Minimax aplica a ideia descrita pelo teorema através de uma busca em profundidade, devolvendo assim o melhor \emph{payoff} para o um dado estado do jogo. Este algoritmo tem complexidade exponencial de $O(b^{h})$, sendo $b$ o fator de ramificação do jogo e $h$ um limite superior do número máximo de jogadas.
+O algoritmo de Minimax aplica a ideia descrita pelo teorema através de
+uma busca em profundidade, devolvendo assim o melhor \emph{payoff}
+para o um dado estado do jogo. Este algoritmo tem complexidade
+exponencial de $O(b^{h})$, sendo $b$ o fator de ramificação do jogo e
+$h$ um limite superior do número máximo de jogadas.
 
 \begin{algorithm}
 \begin{algorithmic}
@@ -155,9 +165,12 @@ O algoritmo de Minimax aplica a ideia descrita pelo teorema através de uma busc
 \caption{Minimax}
 \end{algorithm}
 
-\subsubsection{O Negamax}
+\subsubsection{O \textit{Negamax}}
 
-O algoritmo Negamax é uma variante simplificada do Minimax para jogos que verificam uma simetria entre os valores do estado para cada um dos jogadores. Sendo assim, é possível minimizar ou maximizar valores do oponente através da negação do valor Negamax da jogada seguinte.
+O algoritmo \textit{Negamax} é uma variante simplificada do \textit{Minimax} para jogos
+que verificam uma simetria entre os valores do estado para cada um dos
+jogadores. Sendo assim, é possível minimizar ou maximizar valores do
+oponente através da negação do valor \textit{Negamax} da jogada seguinte.
 
 \begin{algorithm}
 \begin{algorithmic}
@@ -177,11 +190,22 @@ O algoritmo Negamax é uma variante simplificada do Minimax para jogos que verif
 
 \subsection{O Método \textit{Alpha-Beta Pruning}}
 
-O algoritmo \emph{Alpha-Beta Pruning} é uma versão otimizada do Minimax que devolve o valor correto sem percorrer necessariamente a árvore completa. Esta otimização consiste em não expandir nós que tenham um valor pior que outros já vistos anteriormente e efetivamente reduzir a árvore de pesquisa.
+O algoritmo \emph{Alpha-Beta Pruning} é uma versão otimizada do
+\textit{Minimax} que devolve o valor correto sem percorrer
+necessariamente a árvore completa. Esta otimização consiste em não
+expandir nós que tenham um valor pior que outros já vistos
+anteriormente e efetivamente reduzir a árvore de pesquisa.
 
-O nome ``Alpha-Beta'' deve-se ao uso de duas variáveis que, respetivamente, espeficicam o limite inferior e superior dos valores de nós que devem ser expandidos\cite{Russell:AI:2003}. A variável $\alpha$ guarda o valor do melhor para o jogador ``max'' e $\beta$ guarda o melhor valor para o jogador ``min''.
+O nome ``Alpha-Beta'' deve-se ao uso de duas variáveis que,
+respetivamente, espeficicam o limite inferior e superior dos valores
+de nós que devem ser expandidos\cite{Russell:AI:2003}. A variável
+$\alpha$ guarda o valor do melhor para o jogador ``max'' e $\beta$
+guarda o melhor valor para o jogador ``min''.
 
-Uma limitação deste algoritmo é a dependência da ordem ``correta'' na análise dos nós sucessores. Se a lista sucessores for gerada de forma a que os nós que terão pior valor sejam expandidos primeiro, este algoritmo terá de percorrer a árvore completa.
+Uma limitação deste algoritmo é a dependência da ordem ``correta'' na
+análise dos nós sucessores. Se a lista sucessores for gerada de forma
+a que os nós que terão pior valor sejam expandidos primeiro, este
+algoritmo terá de percorrer a árvore completa.
 
 \begin{algorithm}
 \begin{algorithmic}
@@ -217,14 +241,29 @@ Uma limitação deste algoritmo é a dependência da ordem ``correta'' na análi
 
 \subsubsection{Otimizações Comuns}
 
-Existem várias otimizações aos algoritmos acima descritos. Um exemplo seria tabelas de transposição\footnote{do inglês: \emph{Transposition Tables}.} que permitem memorizar as posições pelas quais o algoritmo de busca adversarial já passou e os seus respetivos valores. Dessa forma, é possível evitar recalcular valores de nós já calculados noutros ramos.
+Existem várias otimizações aos algoritmos acima descritos. Um exemplo
+seria tabelas de transposição\footnote{do inglês: \emph{Transposition
+    Tables}.} que permitem memorizar as posições pelas quais o
+algoritmo de busca adversarial já passou e os seus respetivos
+valores. Dessa forma, é possível evitar recalcular valores de nós já
+calculados noutros ramos.
 
-Tabelas de transposição são especialmente benéficas em pesquisas iterativas, porém constituem um custo de memória elevado.
+Tabelas de transposição são especialmente benéficas em pesquisas
+iterativas, porém constituem um custo de memória elevado.
 
-É possível otimizar o \emph{pruning} do \emph{Alpha-Beta} através de \emph{Aspiration Windows}. Este método consiste na previsão e utilização de um limite inferior e superior mais curto. Na eventualidade o resultado verdadeiro se encontrar fora desta janela é necessário refazer a pesquisa com um intervalo maior.
+É possível otimizar o \emph{pruning} do \emph{Alpha-Beta} através de
+\emph{Aspiration Windows}. Este método consiste na previsão e
+utilização de um limite inferior e superior mais curto. Na
+eventualidade o resultado verdadeiro se encontrar fora desta janela é
+necessário refazer a pesquisa com um intervalo maior.
 
-Parar a uma dada prufundidade máxima nem sempre é a melhor estratégia para um agente artificial, porque o nó terminal pode causar grandes mudanças de jogo e o agente não pode expandir os nós seguintes para poder decidir se é uma jogada boa ou não.
-\emph{Quiescence} é uma melhoria à qualidade do resultado da pesquisa \emph{Alpha-Beta}, avaliando apenas movimentos que não causem grandes mudanças no jogo e expandindo os restantes.
+Parar a uma dada prufundidade máxima nem sempre é a melhor estratégia
+para um agente artificial, porque o nó terminal pode causar grandes
+mudanças de jogo e o agente não pode expandir os nós seguintes para
+poder decidir se é uma jogada boa ou não.  \emph{Quiescence} é uma
+melhoria à qualidade do resultado da pesquisa \emph{Alpha-Beta},
+avaliando apenas movimentos que não causem grandes mudanças no jogo e
+expandindo os restantes.
 
 %(http://chessprogramming.wikispaces.com/Alpha-Beta#Enhancements)
 %(http://www.arimaa.com/arimaa/papers/ThomasJakl/bc-thesis.pdf Section 3.1)
@@ -391,9 +430,9 @@ limitado (e o tempo também), descrevem-se apenas brevemente cada uma.
 \item \textbf{\textit{Virtual Visits}}: Corresponde a iniciar o nó com
   um conjunto de visitas (o $n_i$ da fórmula de exploração) positivo,
   assim como número de \textit{playouts} com sucesso (que afeta a
-  variável $\bar{X_i}$). Este número de visitas é uma constante $k$ e
+  variável $\bar{X_i}$). Este número de visitas é uma constante $v$ e
   o número de \textit{playouts} com sucesso é dependente da heurística
-  e será algo como $H_i * k$ (assumindo a heurística
+  e será algo como $H_i * v$ (assumindo a heurística
   normalizada). Assim como a otimização anterior, ajuda a guiar a
   seleção no inicio e introduz algum valor heurístico nos nós;
 \item \textbf{\textit{Maturity Threshold}}: Esta pequena otimização
@@ -539,23 +578,87 @@ da \texttt{MCTS}.
 \section{Implementação}
 \label{sec:imp}
 
-\lipsum[1]
+Para testar as técnicas descritas nas secções anteriores, os 3 métodos
+foram implementados em \texttt{C++}. Foi escolhida esta linguagem
+principalmente por ser rápida, que é um fator muito limitante para
+estes métodos. O código encontra-se anexo a este relatório.
 
-\subsection{Minimax}
+O tabuleiro de jogo foi implementado usando \textit{bitmasking} para
+aumentar a eficiência tanto a nível temporal como a nível espacial, na
+manipulação do mesmo nos vários métodos.
 
-A implementação do algoritmo Minimax é baseada no pseudo-código de Russell\cite{Russell:AI:2003}. Devido ao elevado fator de ramificação do jogo, fomos obrigados a impor limites à pesquisa adversarial Minimax. Atualmente esse limite de profundidade é de 3 \emph{ply}.
+Visto que no \textit{Sesqui} há duas jogadas por turno, a
+implementação poderia usar uma geração de jogadas \textit{step-based},
+ou seja, gerava-se cada uma dos movimentos individuais de um turno (e
+no método retornam-se duas jogadas e não uma), ou \textit{turn-based},
+onde uma jogada é um conjunto de movimentos (equivalente a um
+turno). A primeira tem a vantagem de ser mais leve, mas a segunda
+consegue potencialmente evitar jogadas redundantes (que levam ao mesmo
+tabuleiro). No caso da \texttt{MCTS} optou-se pelo primeiro pela sua
+simplicidade, nos outros dois métodos optou-se pelo segundo.
 
-Na mesma implementação de Minimax, adicionamos umas cláusulas para permitir \emph{pruning} e efetivamente transformar o algoritmo em \emph{Alpha-Beta Pruning}.
+Para os 3 métodos o código implementado funciona recebendo um
+tabuleiro em notação \texttt{PM}, que representa o conjunto de jogadas
+feitas no seguinte formato: \texttt{p|x|y} para representar uma
+colocação em $(x, y)$, \texttt{m|x0|y0|x1|y1} para representar um
+movimento de uma peça de $(x_0, y_0)$ para $(x_1, y_1)$, as diferente
+jogadas são separadas por \texttt{\$} (no terminal é preciso fazer o
+\textit{escaping} deste carácter escrevendo
+\texttt{\textbackslash\$}). O código devolve um par de jogadas em
+notação \texttt{PM} também na versão não verbosa. Por ser desta forma,
+não são aproveitados cálculos de uma jogada para a outra, o que no
+caso da \texttt{MCTS} poderia ser muito proveitoso.
 
-Ao atingir a profundidade máxima permitida, o valor do nó atual é estimado por uma função heurística.
+É de notar que a implementação do \textit{Minimax} é apenas de
+demonstração e não foi usada para testes de desempenho por ser
+demasiado simples (e não obtinha resultados relevantes em tempo
+decente). Assim a discussão deste e das próximas secções incidirá mais
+nos outros dois métodos.
 
-\subsection{\texttt{MCTS}}
+\subsection{\textit{Minimax}}
+
+A implementação do algoritmo \textit{Minimax} é baseada no pseudo-código de
+Russell\cite{Russell:AI:2003}. Devido ao elevado fator de ramificação
+do jogo, fomos obrigados a impor limites à pesquisa adversarial
+\textit{Minimax}. Atualmente esse limite de profundidade é de 3 \emph{ply}.
+
+Na mesma implementação de Minimax, adicionamos umas cláusulas para
+permitir \emph{pruning} e efetivamente transformar o algoritmo em
+\emph{Alpha-Beta Pruning}.
+
+Ao atingir a profundidade máxima permitida, o valor do nó atual é
+estimado por uma função heurística.
+
+\subsection{Pesquisa \textit{Alpha-Beta}}
 
 \lipsum[1]
 
 \lipsum[2]
 
-\lipsum[3]
+\subsection{\texttt{MCTS}}
+
+A \texttt{MCTS} foi implementada baseada no código \cite{MCTSHub} com
+6000 iterações por jogada. Foram implementadas várias otimizações das
+descritas na Subsecção \ref{ssec:mcts}. Foi usada a
+\textit{Progressive Bias} com a heurística a descrever na subsecção
+seguinte. \textit{Virtual Visits} com uma constante de visitas $v =
+6$. Foi aplicado um \textit{Maturity Threshold} de constante igual a
+180. Foi também implementada uma \textit{Grandfather
+  Heuristic}. Finalmente experimentamos diferentes configurações para
+uma \textit{Children Caching}, mas não foi muito eficiente.
+
+O foco desta implementação foi o de fazer os \textit{playouts} o mais
+rápidos possível, pois estes eram o grande \textit{bottleneck} da
+eficiência que impedia aumentar as iterações. Para melhorar a
+eficiência, o \textit{playouts} é interrompido após 30 iterações e
+usa-se ou o valor da heurística para o tabuleiro final, ou o valor do
+vencedor. Estas iterações são fixas, no sentido em que mesmo que o
+jogo acabe, continua a simulação. Isto é feito porque em média não
+altera o resultado final, mas aumenta muito a eficiência.
+
+Todas estas constantes e otimizações foram ajustadas empiricamente,
+através de testes em posições específicas limite e de jogos manuais
+contra o programa.
 
 \subsection{Heurísticas}
 
@@ -572,11 +675,44 @@ Ao atingir a profundidade máxima permitida, o valor do nó atual é estimado po
 \section{Resultados e Desempenho}
 \label{sec:resdes}
 
-\lipsum[1]
+Não foi possível testar os programas com grande rigor, visto que não
+existe nenhuma comunidade de \textit{Sesqui} e por isso não existem
+\textit{benchmarks} a seguir. Assim, o teste de desempenho é feito
+avaliando o resultado de jogos contra os autores.
 
-\lipsum[2]
+De um modo geral os programas atingiram um nível semelhante ao de um
+jogador iniciante. No caso da \texttt{MCTS} certas configurações dos
+parâmetros levaram a um desempenho superior que tinha resultados
+surpreendentes por vezes, chegando até a ganhar um jogo contra um dos
+autores a jogar em ``concentração máxima'' (a Figura \ref{fig:mctswin}
+mostra o resultado final do jogo na plataforma \textit{web}).
 
-\lipsum[3]
+\begin{figure}[!htb]
+  \centering
+  \includegraphics[width=0.8\textwidth]{sesqui_win}
+  \caption{Um jogo interessante contra o \texttt{MCTS} (o programa jogou com as peças pretas)}
+  \label{fig:mctswin}
+\end{figure}
+
+A implementação da pesquisa \textit{Alpha-Beta} não conseguiu ter nenhum
+desempenho melhor, mas visto que a implementação continha poucas
+otimizações e a função heurística não era muito complexa, não era
+esperado um resultado muito melhor. Já a \texttt{MCTS} mostrou-se
+forte em jogadas iniciais (mais estratégicas e de planeamento a longo
+prazo) mas fraco em jogadas finais (mais táticas e de planeamento a
+curto prazo). Isto poderá resultar que para jogadas perto da vitória é
+fácil os \textit{playouts} favorecerem jogadas incorretas. Isto foi de
+tal forma crítico que o programa chegava a falhar jogadas triviais
+vencedoras.
+
+Em termos de desempenho temporal, não foram exploradas muitas
+opções. A versatilidade da \texttt{MCTS} permitia que num controlo de
+tempo mais fixo, conseguisse gerir melhor o seu tempo e obter mais
+resultados. Mesmo no caso da pesquisa \textit{Alpha-Beta}, algum tempo
+extra significaria que era possível ir a uma profundidade maior e
+aumentar imenso a sua performance. Ambos os programas foram escalados
+para demorar entre 5 a 10 segundos para jogar, o que não é muito para
+um programa competitivo em vários outros jogos.
 
 %----------------------------------------------------------------------------------------
 %	SECTION 6
@@ -585,11 +721,20 @@ Ao atingir a profundidade máxima permitida, o valor do nó atual é estimado po
 \section{Conclusão e Trabalho Futuro}
 \label{sec:conc}
 
-Paralelismo, Otimizações no AB, MC-AB (juntar os dois)\cite{Dutra:2015}
+%Paralelismo, Otimizações no AB, MC-AB (juntar os dois)\cite{Dutra:2015}
 
-\lipsum[1]
+Concluímos dizendo que obviamente ainda há muito a melhorar. Vários
+afinamentos serão necessários em todos os métodos e novas otimizações
+poderão melhorar muito o performance dos programas. Outra adição que
+poderá melhorar muito os programas é a paralelização do código. Para
+ambos os métodos já existe uma vasta literatura sobre
+paralelismo. Outro objetivo futuro é o de juntar a \texttt{MCTS} com a
+pesquisa \textit{Alpha-Beta} para tirar o melhor dos dois, em algo
+parecido com uma \textit{Monte Carlo Alpha-Beta}.
 
-\lipsum[2]
+Fazendo apenas uma nota final, depois da intuição estabelecida,
+concluímos que a \texttt{MCTS} se comportou ligeiramente melhor,
+embora tenha falhas, o que já era de esperar.
 
 \bibliographystyle{plain}
 \bibliography{lab_report_2}
