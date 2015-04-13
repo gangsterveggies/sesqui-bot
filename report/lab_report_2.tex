@@ -12,6 +12,7 @@
 \usepackage{lipsum}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{hyperref}
 \usepackage[a4paper,left=2cm,right=2cm,top=2.5cm,bottom=2.5cm]{geometry}
 \usepackage[noend]{algpseudocode}
 \usepackage{algorithmicx}
@@ -434,34 +435,102 @@ tabuleiros que contenham essa jogada.
 %----------------------------------------------------------------------------------------
 
 
-\section{O Jogo de Sesqui}
+\section{O Jogo de \textit{Sesqui}}
 \label{sec:sesqui}
 
-(Porque escolhemos o jogo)
+Apresentamos agora o jogo sobre o qual incidiu a implementação. Para
+permitir explorar o jogo melhor e testar a implementação, foi
+implementado uma versão em \textit{web} do jogo que está disponível em
+\url{http://sesqui-test.meteor.com}. O registo é simples e permite
+jogar com um adversário e também jogar contra cada um dos
+programas. Mais informações sobre os programas serão dadas na Secção
+\ref{sec:imp}.
 
-\lipsum[1]
+O \textit{Sesqui} tem poucas referências, mas aparentemente foi criado
+pela Associação de Jogos Matemáticos Ludus
+\cite{Ludus:2014}. Escolhemos este jogo porque é usado no Campeonato
+Nacional de Jogos Matemáticos \cite{Ludus:2014b} a partir da edição
+2015. Além disso é um jogo que nunca foi estudado e por isso tem muito
+material para ser explorado.
+
+Apesar disto, após vários jogos e testes, chegámos à conclusão que o
+jogo tem algumas falhas de construção que são impeditivas para que
+seja um jogo interessante como iremos ver. Mesmo assim foi um jogo
+interessante para explorar.
 
 \subsection{Regras do Jogo}
 
-\lipsum[1]
+O jogo tem muitos traços do \textit{Hex}, mas joga-se num tabuleiro
+quadriculado de 8 por 8, jogando um tabuleiro com peças brancas e
+outro com peças pretas. Um dos jogadores pretende ligar o topo do
+tabuleiro à base com uma cadeia de peças adjacentes da sua cor
+(verticalmente). O outro jogador pretender ligar o lado esquerdo ao
+lado direito com peças adjacentes da sua cor (horizontalmente). Duas
+peças são consideradas adjacentes se se encontrarem numa casa a uma
+distância de uma unidade, verticalmente, horizontalmente ou
+diagonalmente.
 
-\lipsum[2]
+O jogo começa com o jogador das peças brancas a colocar uma peça onde
+quiser. Segue o jogador de peças pretas a colocar duas peças onde
+quiser. A partir deste turno cada jogador tem de mover uma peça da sua
+cor e colocar uma peça da sua cor, na ordem que quiser. A colocação da
+peça tem de ser numa casa vazia adjacente na horizontal ou vertical de
+uma outra peça sua. O movimento de uma peça é feita como o movimento
+de uma dama no xadrez, não sendo possível saltar por cima de outras
+peças ou de colocar numa posição com outra peça. Um exemplo de um jogo
+encontra-se na Figura \ref{fig:sesqui}.
 
-\lipsum[3]
+\begin{figure}[!htb]
+  \centering
+  \includegraphics[width=0.3\textwidth]{sesqui_game}
+  \caption{Um jogo de \textit{Sesqui}}
+  \label{fig:sesqui}
+\end{figure}
+
+Para impedir empates, existe ainda uma regra que impede a existência
+de peças cruzadas num padrão de 4 peças como o ilustrado na Figura
+\ref{fig:cross}.
+
+\begin{figure}[!htb]
+  \centering
+  \includegraphics[width=0.3\textwidth]{sesqui_forb}
+  \caption{Um padrão proibido de \textit{Sesqui}}
+  \label{fig:cross}
+\end{figure}
 
 \subsection{Alguns Resultados sobre o Jogo}
 
-(Numero de tabuleiros, empates, vantagem do segundo)
+%(Numero de tabuleiros, empates, vantagem do segundo)
 
-\lipsum[1]
+Primeiro é de notar que não é possível haver empates. Existem algumas
+posições atingíveis onde o jogador de peças brancas não tem onde jogar
+(como jogar um quadrado de 4 por 4 num dos cantos do tabuleiro que o
+jogador de peças pretas envolve com peças suas), mas fora isso não é
+possível empatar. Não provamos isto, mas imaginamos que a prova é
+semelhante à prova análoga para o \textit{Hex}. Experimentalmente, a
+nossa implementação também não encontrou nenhum tabuleiro possível de
+empate.
 
-\lipsum[2]
+Um resultado desencorajante, é que aparentemente o segundo jogador tem
+vantagem sobre o primeiro graças à colocação de duas peças no
+início. Após vários jogos entre diferentes pessoas, existe uma clara
+tendência para o jogador de peças pretas ganhar. O mesmo foi
+confirmado pela implementação. Porém, não conseguimos provar este
+resultado usando nenhuma das estratégias mais conhecidas para este
+tipo de prova (como estratégia de roubo de estratégia).
 
 \subsection{Intuição para a Implementação}
 
-\lipsum[1]
-
-\lipsum[2]
+A nossa intuição para a implementação do jogo será que é um jogo muito
+intermédio em termos de qual das técnicas funcionará melhor. No caso
+do \textit{Alpha-Beta} será complicado que tenha um bom desempenho,
+mesmo com uma boa função heurística, pois o fator de ramificação é
+muito alto (em média pode chegar aos 1000, graças a haver um movimento
+e uma colocação de peça por jogada). Já no caso da \texttt{MCTS}, é um
+jogo que tem algumas características do \textit{Hex} e do \textit{Go},
+que funcionam bem com \texttt{MCTS}, porém os movimentos de peças como
+damas de xadrez formam um padrão que complica algumas das otimizações
+da \texttt{MCTS}.
 
 %----------------------------------------------------------------------------------------
 %	SECTION 4
