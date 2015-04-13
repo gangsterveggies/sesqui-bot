@@ -239,7 +239,7 @@ algoritmo terá de percorrer a árvore completa.
 \caption{\emph{Alpha-Beta Pruning}}
 \end{algorithm}
 
-\subsubsection{Otimizações Comuns}
+\subsubsection{Otimizações Comuns}\label{ab:opt}
 
 Existem várias otimizações aos algoritmos acima descritos. Um exemplo
 seria tabelas de transposição\footnote{do inglês: \emph{Transposition
@@ -631,9 +631,19 @@ estimado por uma função heurística.
 
 \subsection{Pesquisa \textit{Alpha-Beta}}
 
-\lipsum[1]
+A implementação pesquisa \textit{Alpha-Beta}, tal como o
+\emph{Minimax}, é baseada no pseudo-código de
+Russell\cite{Russell:AI:2003}. Por razões de limites de tempo, a sua
+profundidade está limitada também a 3 \emph{ply}, no entanto, consegue
+terminar a sua busca mais rapidamente que o \emph{Minimax}.
 
-\lipsum[2]
+%Atualmente não estão a ser efetuadas muitas otimizações no
+%\emph{Alpha-Beta}, como as descritas em \label{ab:opt}.
+Uma das otimizações que implementamos para reduzir a largura da árvore
+de pesquisa, quer para o \emph{Alpha-Beta}, quer para o
+\emph{Minimax}, consiste em considerar os dois \emph{steps} de uma
+jogada como um só e apenas expandir o nó que deste movimento resulta
+se não tiver sido visitado anteriormente por uma jogada equivalente.
 
 \subsection{\texttt{MCTS}}
 
@@ -662,11 +672,24 @@ contra o programa.
 
 \subsection{Heurísticas}
 
-\lipsum[1]
+Na implementação dos vários algoritmos de busca adversarial foram
+utilizadas duas heurísticas.
 
-\lipsum[2]
+Inicialmente, escolhemos uma heurística que devolvia um valor tanto
+maior quanto fosse a maior área contígua de peças de um
+jogador. Rapidamente verificamos as limitações desse método quando os
+\emph{bots} começaram a dar preferência a criar áreas quadradas em vez
+de se preocuparem em ligar os seus lados opostos.
 
-\lipsum[3]
+Uma segunda heurística obteve resultados bem mais interessantes e
+competitivos. A sua ideia baseia-se no deslocamento necessário por
+parte de um jogador para ligar as suas atuais peças aos dois lados do
+tabuleiro. Este valor é obtido através de uma pesquisa em largura que
+aumenta o valor a devolver sempre que o nó é expandido para uma casa
+vazia e mantém esse valor sempre que o nó é expandido para uma casa do
+próprio jogador. A pesquisa é interrompida nas direções que contêm
+peças do adversário.
+
 
 %----------------------------------------------------------------------------------------
 %	SECTION 5
