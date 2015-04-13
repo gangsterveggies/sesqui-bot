@@ -116,7 +116,10 @@ ou tabuleiro. O valor da função heurística para um determinado
 tabuleiro é chamada da função utilidade. O \textit{payoff} é o valor
 relativo de um tabuleiro (distinguimo-lo da função utilidade porque
 consideramo-lo um valor teórico, enquanto que a função utilidade é um
-valor empírico dado pela heurística).
+valor empírico dado pela heurística). Na Subsecção \ref{ssec:mcts} é
+descrito um algoritmo em árvore, por isso usa-se a notação padrão de
+métodos de pesquisa (uma árvore cujos elementos são nós, o nó inicial
+é a raiz e os nós mais profundos são as folhas \ldots).
 
 \subsection{O Teorema e o Algoritmo Minimax}
 
@@ -226,12 +229,71 @@ Tabelas de transposição são especialmente benéficas em pesquisas iterativas,
 %Referir: NegaScout
 
 \subsection{\textit{Monte Carlo Tree Search}}
+\label{ssec:mcts}
 
-\lipsum[1]
+O algoritmo de \textit{Monte Carlo Tree Search} (a partir de agora
+referenciado como \texttt{MCTS}) surgiu graças ao jogo de
+\textit{Go}. Depois de muitos desenvolvimentos no ramo de Inteligência
+artificial e de vários jogos a terem programas competitivos, o
+\textit{Go} continuou a ``fugir'' a estes desenvolvimentos e até tão
+cedo como 1998 um jogador profissional era capaz de vencer o melhor
+programa com um \textit{handicap} de até 30 peças (num tabuleiro de 19
+por 19).  Em 2005, baseado num trabalho desenvolvido em
+1993\cite{Brugmann:1993}, surgiu um novo algoritmo que obteve
+resultados muito melhores do que até então, a \texttt{MCTS}. Desde
+então que já sofreu muitos desenvolvimentos e várias otimizações e é o
+algoritmo com melhor performance em \textit{Go} e além disso foi
+aplicado a vários outros jogos (como o \textit{Hex}, o \textit{Arimaa}
+e até \textit{Poker}).
 
-\lipsum[2]
+A ideia base é a de usar simulações pseudoaleatórias (chamadas de
+\textit{playouts}) de jogos a partir de cada posição e verificar
+quantas levam a resultados vencedores. Porém, algumas jogadas
+``merecem'' mais atenção do que outras e assim são exploradas mais
+vezes de maneira a ter a informação mais detalhada possível. O
+algoritmo pode ser descrito com os seguintes 4 passos, que são
+executados iterativamente múltiplas vezes:
 
-\lipsum[3]
+\begin{itemize}
+  \item \textbf{Seleção}: A partir do nó raiz (que representa o
+    tabuleiro inicial), selecionar filhos sucessivos até chegar a uma
+    folha;
+  \item \textbf{Expansão}: Se o nó folha selecionado não for final,
+    expande-o, criando os seus filhos e construindo as suas
+    propriedades;
+  \item \textbf{Simulação}: Simula um jogo pseudoaleatório até atingir
+    uma configuração final;
+  \item \textbf{Propagação}: Propaga a informação da simulação pelo nó
+    folha selecionado e todos os seus nós antecessores;
+\end{itemize}
+
+A Figura \ref{fig:mcts} ilustra este processo. Desde já podemos ver
+algumas vantagens deste método em relação aos anteriormente
+apresentados. O primeiro é que é um algoritmo \textit{anytime}, ou
+seja, que pode ser parado a qualquer altura. Para jogos onde o
+controlo de tempo é importante, esta propriedade ajuda a gerir o
+tempo. Depois, não é necessária nenhuma heurística para guiar o
+algoritmo (embora seja útil usar-se como se verá na Subsecção
+\ref{sec:mcopt}). Além disso, é gerada uma árvore assimétrica
+naturalmente. Ao contrário de métodos como o \textit{Alpha-Beta} que
+cortam jogadas que não parecem promissoras, a \texttt{MCTS} explora
+mais as que parecem mais promissoras, dando origem assim a uma árvore
+assimétrica.
+
+Contudo, existem também algumas desvantagens. Primeiro é mais lenta
+que a \textit{Alpha-Beta}. Para se obter um bom resultado é necessário
+perder mais tempo, em média, do que na \textit{Alpha-Beta}. Outra
+desvantagem é que a árvore de procura tem de ser mantida em memória, o
+que introduz mais uma limitação possível ao algoritmo. Existem outras
+desvantagens que foram mais notadas com a implementação do algoritmo e
+que serão descritas na Secção \ref{sec:imp}.
+
+\begin{figure}[!htb]
+  \centering
+  \includegraphics[width=1\textwidth]{mcts}
+  \caption{A \textit{Monte Carlo Tree Search}}
+  \label{fig:mcts}
+\end{figure}
 
 \subsubsection{\textit{Upper Confidence Bounds} e o \textit{Multi-Armed Bandit}}
 
@@ -246,6 +308,7 @@ Tabelas de transposição são especialmente benéficas em pesquisas iterativas,
 \lipsum[2]
 
 \subsubsection{Otimizações Comuns}
+\label{sec:mcopt}
 
 %(http://www.arimaa.com/arimaa/papers/ThomasJakl/bc-thesis.pdf Section 3.2)
 %(http://arimaa.com/arimaa/papers/TomasKozelekThesis/mt.pdf Section 3.3)
@@ -312,7 +375,7 @@ Referir: RAVE
 
 \lipsum[2]
 
-\subsection{\textit{MCTS}}
+\subsection{\texttt{MCTS}}
 
 \lipsum[1]
 
