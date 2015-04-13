@@ -228,6 +228,8 @@ Tabelas de transposição são especialmente benéficas em pesquisas iterativas,
 %Tópicos: Transposition Table, Iterative Deepening, Aspiration Windows, Move ordering, Quiescence Search
 %Referir: NegaScout
 
+\newpage
+
 \subsection{\textit{Monte Carlo Tree Search}}
 \label{ssec:mcts}
 
@@ -375,15 +377,54 @@ levam a melhores resultados com a \texttt{MCTS}. Como o espaço é
 limitado (e o tempo também), descrevem-se apenas brevemente cada uma.
 
 \begin{itemize}
-\item \textbf{\textit{Progressive Bias}}:
-\item \textbf{\textit{Virtual Visits}}:
-\item \textbf{\textit{Maturity Threshold}}:
-\item \textbf{\textit{Children Caching}}:
-\item \textbf{\textit{History Heuristics}}:
-\item \textbf{\textit{Transposition Tables}}:
+\item \textbf{\textit{Progressive Bias}}: Esta otimização corresponde
+  combinar informações estimadas com informações empíricas, ao
+  introduzir um termo na fórmula de exploração \texttt{UCB} de
+  $\frac{H_i}{n_i + 1}$, onde o $H_i$ corresponde a um coeficiente
+  obtido a partir da heurística. Assim, a heurística ajuda a guiar
+  quais os nós parecem promissores no início, quando ainda foram
+  executados poucas iterações;
+\item \textbf{\textit{Virtual Visits}}: Corresponde a iniciar o nó com
+  um conjunto de visitas (o $n_i$ da fórmula de exploração) positivo,
+  assim como número de \textit{playouts} com sucesso (que afeta a
+  variável $\bar{X_i}$). Este número de visitas é uma constante $k$ e
+  o número de \textit{playouts} com sucesso é dependente da heurística
+  e será algo como $H_i * k$ (assumindo a heurística
+  normalizada). Assim como a otimização anterior, ajuda a guiar a
+  seleção no inicio e introduz algum valor heurístico nos nós;
+\item \textbf{\textit{Maturity Threshold}}: Esta pequena otimização
+  pode revelar-se muito importante em vários casos. A ideia é limitar
+  a expansão de nós, só expandindo nós que já tenham tido pelo menos
+  um número de visitas (ou um número de escolhas para simulação) maior
+  ou igual a um coeficiente chamado coeficiente de
+  maturidade. Normalmente também se usa a profundidade do nó para
+  limitar a expansão, que combinado com o coeficiente, ajuda a não
+  expandir nós demasiadamente profundos para terem impacto no valor
+  dos nós mais superiores;
+\item \textbf{\textit{Children Caching}}: Esta otimização pretende
+  diminuir o tempo gasto no passo de seleção. A ideia é manter uma
+  \textit{cache} com número pequeno de filhos do nó e só selecionar
+  nós desta \textit{cache}. A \textit{cache} é preenchida com um
+  conjunto dos melhores nós (com valor mais alto da função de
+  exploração \texttt{UCB}) e é esvaziada e recalculada de tempo a
+  tempo;
+\item \textbf{\textit{Grandfather Heuristics}}: Neste otimização
+  inicializa-se o número de visitas e o valor do nó com o número de
+  visitas e o valor do nó do nó dois níveis acima (o antecessor do
+  antecessor), caso exista. A ideia é que se uma jogada foi positiva,
+  então a sua continuação também a será;
+\item \textbf{\textit{Transposition Tables}}: Esta adaptação da
+  otimização já existente na pesquisa \textit{Alpha-Beta} tem como
+  objetivo evitar nós com tabuleiros repetidos, fazendo um
+  \textit{merge} de nós com o mesmo tabuleiro;
 \end{itemize}
 
-Referir: RAVE
+Existem muitas mais otimizações e técnicas para melhorar a
+\texttt{MCTS}. A mais importante não referida é a chamada
+\textit{Rapid Action Value Estimation} que é muito usada em jogos de
+colocação de peças (como o \textit{Go}) cujo objetivo é de considerar
+a informação que uma jogada teve num \textit{playout} para todos os
+tabuleiros que contenham essa jogada.
 
 %----------------------------------------------------------------------------------------
 %	SECTION 3
