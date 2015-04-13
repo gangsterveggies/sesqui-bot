@@ -222,7 +222,7 @@ Tabelas de transposição são especialmente benéficas em pesquisas iterativas,
 
 É possível otimizar o \emph{pruning} do \emph{Alpha-Beta} através de \emph{Aspiration Windows}. Este método consiste na previsão e utilização de um limite inferior e superior mais curto. Na eventualidade o resultado verdadeiro se encontrar fora desta janela é necessário refazer a pesquisa com um intervalo maior.
 
-Parar a uma dada prufundidade máxima nem sempre é a melhor estratégia para um agente artificial, porque o nó terminal causar grandes mudanças de jogo e o agente não pode expandir os nós seguintes para poder decidir se é uma jogada boa ou não.
+Parar a uma dada prufundidade máxima nem sempre é a melhor estratégia para um agente artificial, porque o nó terminal pode causar grandes mudanças de jogo e o agente não pode expandir os nós seguintes para poder decidir se é uma jogada boa ou não.
 \emph{Quiescence} é uma melhoria à qualidade do resultado da pesquisa \emph{Alpha-Beta}, avaliando apenas movimentos que não causem grandes mudanças no jogo e expandindo os restantes.
 
 %(http://chessprogramming.wikispaces.com/Alpha-Beta#Enhancements)
