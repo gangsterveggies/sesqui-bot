@@ -148,7 +148,7 @@ O algoritmo de Minimax aplica a ideia descrita pelo teorema através de uma busc
   \State\Return{$best$} 
 \EndFunction
 \end{algorithmic}
-\caption{Algoritmo Minimax}
+\caption{Minimax}
 \end{algorithm}
 
 \subsubsection{O Negamax}
@@ -168,40 +168,62 @@ O algoritmo Negamax é uma variante simplificada do Minimax para jogos que verif
   \State\Return{$best$} 
 \EndFunction
 \end{algorithmic}
-\caption{Algoritmo Negamax}
+\caption{Negamax}
 \end{algorithm}
 
 \subsection{O Método \textit{Alpha-Beta Pruning}}
 
-\lipsum[1]
+O algoritmo \emph{Alpha-Beta Pruning} é uma versão otimizada do Minimax que devolve o valor correto sem percorrer necessariamente a árvore completa. Esta otimização consiste em não expandir nós que tenham um valor pior que outros já vistos anteriormente e efetivamente reduzir a árvore de pesquisa.
 
-\lipsum[2]
+O nome ``Alpha-Beta'' deve-se ao uso de duas variáveis que, respetivamente, espeficicam o limite inferior e superior dos valores de nós que devem ser expandidos\cite{Russell:AI:2003}. A variável $\alpha$ guarda o valor do melhor para o jogador ``max'' e $\beta$ guarda o melhor valor para o jogador ``min''.
 
-\lipsum[3]
+Uma limitação deste algoritmo é a dependência da ordem ``correta'' na análise dos nós sucessores. Se a lista sucessores for gerada de forma a que os nós que terão pior valor sejam expandidos primeiro, este algoritmo terá de percorrer a árvore completa.
 
-\lipsum[4]
-
-\lipsum[5]
-
-\lipsum[6]
+\begin{algorithm}
+\begin{algorithmic}
+\Function{Alpha-Beta}{$Node$, $Player$, $\alpha$, $\beta$}
+  \If{\Call{Terminal}{$Node$}} \Return{\Call{Value}{$Node$}}
+  \EndIf
+  \If{$Player=min$}
+      \State $best \gets \infty$
+      \For{$son$ in \Call{Successors}{$Node$}}
+          \State $next \gets$ \Call{Alpha-Beta}{$son$, $max$, $\alpha$, $\beta$}
+          \State $best \gets$ \Call{Min}{$best$, $next$}
+          \If{$best \leq \alpha$}
+              \State\Return{$best$}
+          \EndIf
+          \State $\beta \gets$ \Call{Min}{$\beta$, $best$}
+      \EndFor
+  \ElsIf{$Player=max$}
+      \State $best \gets -\infty$
+      \For{$son$ in \Call{Successors}{$Node$}}
+          \State $next \gets$ \Call{Alpha-Beta}{$son$, $min$, $\alpha$, $\beta$}
+          \State $best \gets$ \Call{Max}{$best$, $next$}
+          \If{$best \geq \beta$}
+              \State\Return{$best$}
+          \EndIf
+          \State $\alpha \gets$ \Call{Max}{$\alpha$, $best$}
+      \EndFor
+  \EndIf
+  \State\Return{$best$} 
+\EndFunction
+\end{algorithmic}
+\caption{\emph{Alpha-Beta Pruning}}
+\end{algorithm}
 
 \subsubsection{Otimizações Comuns}
+
+Existem várias otimizações aos algoritmos acima descritos. Um exemplo seria tabelas de transposição\footnote{do inglês: \emph{Transposition Tables}.} que permitem memorizar as posições pelas quais o algoritmo de busca adversarial já passou e os seus respetivos valores. Dessa forma, é possível evitar recalcular valores de nós já calculados noutros ramos.
+
+Tabelas de transposição são especialmente benéficas em pesquisas iterativas, porém constituem um custo de memória elevado.
+
+É possível otimizar o \emph{pruning} do \emph{Alpha-Beta} através de \emph{Aspiration Windows}. Este método consiste na previsão e utilização de um limite inferior e superior mais curto. Na eventualidade o resultado verdadeiro se encontrar fora desta janela é necessário refazer a pesquisa com um intervalo maior.
 
 %(http://chessprogramming.wikispaces.com/Alpha-Beta#Enhancements)
 %(http://www.arimaa.com/arimaa/papers/ThomasJakl/bc-thesis.pdf Section 3.1)
 
-Tópicos: Transposition Table, Iterative Deepening, Aspiration Windows, Move ordering, Quiescence Search
-Referir: NegaScout
-
-\lipsum[1]
-
-\lipsum[2]
-
-\lipsum[3]
-
-\lipsum[4]
-
-\lipsum[5]
+%Tópicos: Transposition Table, Iterative Deepening, Aspiration Windows, Move ordering, Quiescence Search
+%Referir: NegaScout
 
 \subsection{\textit{Monte Carlo Tree Search}}
 
