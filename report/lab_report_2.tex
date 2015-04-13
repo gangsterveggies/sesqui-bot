@@ -222,6 +222,9 @@ Tabelas de transposição são especialmente benéficas em pesquisas iterativas,
 
 É possível otimizar o \emph{pruning} do \emph{Alpha-Beta} através de \emph{Aspiration Windows}. Este método consiste na previsão e utilização de um limite inferior e superior mais curto. Na eventualidade o resultado verdadeiro se encontrar fora desta janela é necessário refazer a pesquisa com um intervalo maior.
 
+Parar a uma dada prufundidade máxima nem sempre é a melhor estratégia para um agente artificial, porque o nó terminal pode causar grandes mudanças de jogo e o agente não pode expandir os nós seguintes para poder decidir se é uma jogada boa ou não.
+\emph{Quiescence} é uma melhoria à qualidade do resultado da pesquisa \emph{Alpha-Beta}, avaliando apenas movimentos que não causem grandes mudanças no jogo e expandindo os restantes.
+
 %(http://chessprogramming.wikispaces.com/Alpha-Beta#Enhancements)
 %(http://www.arimaa.com/arimaa/papers/ThomasJakl/bc-thesis.pdf Section 3.1)
 
@@ -471,9 +474,11 @@ tabuleiros que contenham essa jogada.
 
 \subsection{Minimax}
 
-\lipsum[1]
+A implementação do algoritmo Minimax é baseada no pseudo-código de Russell\cite{Russell:AI:2003}. Devido ao elevado fator de ramificação do jogo, fomos obrigados a impor limites à pesquisa adversarial Minimax. Atualmente esse limite de profundidade é de 3 \emph{ply}.
 
-\lipsum[2]
+Na mesma implementação de Minimax, adicionamos umas cláusulas para permitir \emph{pruning} e efetivamente transformar o algoritmo em \emph{Alpha-Beta Pruning}.
+
+Ao atingir a profundidade máxima permitida, o valor do nó atual é estimado por uma função heurística.
 
 \subsection{\texttt{MCTS}}
 
