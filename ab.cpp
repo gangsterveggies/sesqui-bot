@@ -33,6 +33,7 @@ void AB::solve(board initial_board, int initial_move) {
   else  
     v = MaxValue(initial_board, -INF, INF);
   DEBUG("Utility %lf\n", v.first);
+
   for (auto it : Successors(initial_board))
     if (applyMoves(initial_board, it, cur_player) == v.second) {
       list_moves = it;
@@ -89,7 +90,12 @@ pair<double, board> AB::MaxValue(board b, double alpha, double beta) {
   int player = Board::valid_board_player(b);
 
   pair<double, board> v = make_pair(-INF, b);
+  set<board> visited;
+
   for (auto it : Successors(b)) {
+    if (visited.find(applyMoves(b, it, player)) != visited.end())
+      continue;
+
     pair<double, board> other = MinValue(applyMoves(b, it, player), alpha, beta);
     if (other > v) {
       v = other;
@@ -103,6 +109,7 @@ pair<double, board> AB::MaxValue(board b, double alpha, double beta) {
       }
       alpha = max(alpha, v.first);
     }
+    visited.insert(applyMoves(b, it, player));
   }
   cur_depth--;
   return v;
@@ -119,7 +126,12 @@ pair<double, board> AB::MinValue(board b, double alpha, double beta) {
   int player = Board::valid_board_player(b);
 
   pair<double, board> v = make_pair(INF, b);
+  set<board> visited;
+
   for (auto it : Successors(b)) {
+    if (visited.find(applyMoves(b, it, player)) != visited.end())
+      continue;
+
     pair<double, board> other = MaxValue(applyMoves(b, it, player), alpha, beta);
     if (other < v) {
       v = other;
@@ -133,6 +145,7 @@ pair<double, board> AB::MinValue(board b, double alpha, double beta) {
       }
       beta = min(alpha, v.first);
     }
+    visited.insert(applyMoves(b, it, player));
   }
   cur_depth--;
   return v;
