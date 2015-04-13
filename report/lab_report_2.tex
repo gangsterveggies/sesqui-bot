@@ -245,8 +245,12 @@ executados iterativamente múltiplas vezes:
     folha selecionado e todos os seus nós antecessores;
 \end{itemize}
 
-A Figura \ref{fig:mcts} ilustra este processo. Desde já podemos ver
-algumas vantagens deste método em relação aos anteriormente
+A Figura \ref{fig:mcts} ilustra este processo. Este método no limite
+converge para o \textit{Minimax}, isto é, se o número de iterações das
+4 fases for suficientemente alto. Na prática normalmente o algoritmo
+sofre um \textit{plateau} dependendo das otimizações usadas.
+
+Algumas vantagens deste método em relação aos anteriormente
 apresentados. O primeiro é que é um algoritmo \textit{anytime}, ou
 seja, que pode ser parado a qualquer altura. Para jogos onde o
 controlo de tempo é importante, esta propriedade ajuda a gerir o
@@ -273,17 +277,70 @@ que serão descritas na Secção \ref{sec:imp}.
   \label{fig:mcts}
 \end{figure}
 
-\subsubsection{\textit{Upper Confidence Bounds} e o \textit{Multi-Armed Bandit}}
+\subsubsection{\textit{Upper Confidence Bound} e o \textit{Multi-Armed Bandit}}
 
-\lipsum[1]
+O problema principal do algoritmo anterior está na fase de
+Seleção. Como é que se escolhe o próximo nó a explorar? Por um lado
+pode ser boa ideia tentar explorar o que nós parece mais promissor de
+momento, mas com isto pode-se deixar de lado nós que são muito mais
+promissores (ficando preso num máximo local). Por outro lado pode-se
+dar prioridade aos nós menos explorados, mas assim não estamos a tirar
+partido da informação que vamos tendo (a árvore fica simétrica). Isto
+é análogo ao problema clássico do \textit{Multi-Armed Bandit}, onde
+dado um conjunto de \textit{slot-machines} com diferentes níveis de
+recompensa, como é que se pode obter uma estratégia que maximize os
+ganhos do jogo. É o dilema da exploração contra aproveitamento (em
+inglês \textit{exploitation vs exploration}).
 
-\lipsum[2]
+Existem várias maneiras de abordar este problema. Uma das primeiras a
+ser aplicada a \texttt{MCTS} chama-se \textit{Upper Confidence
+  Bound}. Este método seleciona cada nó uma vez
+inicialmente. Posteriormente usa a seguinte fórmula de exploração e
+escolhe o nó que a maximiza: $\bar{X_i} + c
+\sqrt{\frac{\log{n}}{n_i}}$ para cada nó $i$, onde $\bar{X_i}$ é o
+valor médio desse nó (que no contexto da \texttt{MCTS} é dado pelo
+número de vezes que uma simulação a partir desse nó resultou numa
+vitória, sobre o número total de vezes que o nó foi escolhido para uma
+simulação), $n$ é o número total de vezes que foi efetuada uma seleção
+que envolvesse aquele nó (que corresponde ao número de vezes que o pai
+desse nó foi selecionado para uma simulação), $n_i$ corresponde ao
+número de seleções para simulação desse nó e $c$ é a chamada constante
+de \texttt{UCB} e que normalmente é $\sqrt{2}$. À combinação deste
+formula com \texttt{MCTS} chama-se de \textit{Upper Confidence bound
+  to Trees}. O uso deste método revelou-se muito positivo e desde
+então já foi muito estudado e melhorado.
 
 \subsubsection{Heurísticas: \textit{Heavy} e \textit{Light} \textit{Playouts}}
 
-\lipsum[1]
+Os métodos descritos até à subsecção anterior constituem a base do que
+é a \texttt{MCTS}. Este algoritmo elegante até agora não necessitou de
+nenhum conhecimento específico do jogo para o guiar e por isso é um
+\textit{General Playing Algorithm}. Porém, para jogos de média
+complexidade e alta complexidade, estabiliza em níveis baixos de
+desempenho e por isso não é muito competitivo. Por isso, é necessário
+aplicar um conjunto de otimizações e técnicas para melhorar a sua
+performance. Uma delas é introduzir heurísticas no algoritmo. É
+possível introduzir heurísticas em várias das fases do algoritmo, aqui
+descrevemos o seu uso na fase de Simulação.
 
-\lipsum[2]
+É possível fazer os \textit{playouts} puramente aleatórios e escolher
+cada jogada a seguir aleatoriamente. A isto chama-se \textit{light
+  playouts}. De um modo geral não funcionam mal, porque
+experimentalmente verificou-se que \textit{playouts} de valor inferior
+(jogados de maneira mais \textit{naive}) levam a melhores resultados
+do método geral (em comparação com métodos não perfeitos, claro que se
+o \textit{playout} fosse perfeito o seu resultado dava a informação
+completa e não eram necessários mais). Infelizmente, no caso geral são
+normalmente necessárias demasiadas iterações para se obter um bom
+resultado. Assim, foi introduzido conhecimento especifico do jogo para
+guiar os \textit{playouts}. A isto chama-se \textit{heavy playouts}. O
+método mais comum e que leva à maior eficiência é o chamado
+\textit{Best-of-N}, que corresponde a gerar um conjunto de $N$ jogadas
+possíveis em cada turno do \textit{playout} e escolher das $N$ a que
+leva a um tabuleiro com valor de heurística superior. A única
+desvantagem deste método é que torna a simulação mais lenta e por isso
+obriga a diminuir o número de iterações, mas no geral os resultados
+melhoram.
 
 \subsubsection{Otimizações Comuns}
 \label{sec:mcopt}
@@ -291,18 +348,20 @@ que serão descritas na Secção \ref{sec:imp}.
 %(http://www.arimaa.com/arimaa/papers/ThomasJakl/bc-thesis.pdf Section 3.2)
 %(http://arimaa.com/arimaa/papers/TomasKozelekThesis/mt.pdf Section 3.3)
 
-Tópicos: Transposition Tables, Progressive bias, History heuristics, Best-of-N, Virtual Visits, Children Caching, Maturity Threshold
+Nesta subsecção introduzimos algumas das otimizações mais comuns e que
+levam a melhores resultados com a \texttt{MCTS}. Como o espaço é
+limitado (e o tempo também), descrevem-se apenas brevemente cada uma.
+
+\begin{itemize}
+\item \textbf{\textit{Progressive Bias}}:
+\item \textbf{\textit{Virtual Visits}}:
+\item \textbf{\textit{Maturity Threshold}}:
+\item \textbf{\textit{Children Caching}}:
+\item \textbf{\textit{History Heuristics}}:
+\item \textbf{\textit{Transposition Tables}}:
+\end{itemize}
+
 Referir: RAVE
-
-\lipsum[1]
-
-\lipsum[2]
-
-\lipsum[3]
-
-\lipsum[4]
-
-\lipsum[5]
 
 %----------------------------------------------------------------------------------------
 %	SECTION 3
