@@ -61,6 +61,9 @@ void output_help()
   printf("Available arguments:\n");
   printf("\t-h, --help\t\tdisplay this help file\n"
          "\t-v, --verbose\n"
+	 "\t--ab\t\t\talfa-beta pruning\n"
+	 "\t--mcts\t\t\tMonte Carlo tree search\n"
+	 "\t--random\t\trandom movement\n"
     );
 }
 
@@ -101,10 +104,12 @@ vector<Move> calculate()
     list_moves.push_back(moves[rand() % ((int)moves.size())]);
   }
 
-  engine->solve(initial_board, initial_move);
-  list_moves = engine->get_solution();
+  if (method_flag != 3) {
+    engine->solve(initial_board, initial_move);
+    list_moves = engine->get_solution();
 
-  delete engine;
+    delete engine;
+  }
 
   return list_moves;
 }
