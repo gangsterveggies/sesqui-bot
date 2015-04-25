@@ -90,26 +90,26 @@ e o desempenho da implementação. Finalmente, na Secção \ref{sec:conc}
 \label{sec:algconc}
 
 Existem várias maneiras de abordar um jogo. Para jogos mais simples
-como o \textit{Nim} existe uma estratégia vencedora, para a maior
-parte das posições iniciais, que se baseia num invariante do
-jogo. Para jogos que sejam facilmente decompostos em subjogos
-independentes, o teorema de \textit{Sprague-Grundy} pode ser usado
-para obter uma estratégia. Para certos jogos, como o \textit{Connect
-  Four} (conhecido em português pelo ``4 em linha'')
-\cite{Allis:1988}, foram aplicados conhecimentos de combinatória para
-resolver o jogo, ou seja, para obter uma estratégia vencedora do
-jogo.
+como o \textit{Nim} existe uma estratégia vencedora
+\cite{Bouton:1901}, para a maior parte das posições iniciais, que se
+baseia num invariante do jogo. Para jogos que sejam facilmente
+decompostos em subjogos independentes, o teorema de
+\textit{Sprague-Grundy} pode ser usado para obter uma estratégia. Para
+certos jogos, como o \textit{Connect Four} (conhecido em português
+pelo ``4 em linha'') \cite{Allis:1988}, foram aplicados conhecimentos
+de combinatória para resolver o jogo, ou seja, para obter uma
+estratégia vencedora do jogo.
 
 Porém, para a maior parte dos jogos, não é fácil obter resultados como
-estes. É necessário assim recorrer a métodos exaustivos, que enumeram
-os vários estados possíveis do jogo. Nesta secção descrevemos 3
-métodos com este comportamento. A ideia geral deste métodos é de a
-partir de uma configuração inicial enumerar as várias transições
-possíveis com o objetivo de explorar o espaço de estados disponível
-até chegar a posições terminais. Como este espaço de estados pode ser
-demasiado extenso, recorrem-se a heurísticas para medir o valor de
-configurações não terminais e assim efetua-se a pesquisa apenas até
-uma certa profundidade.
+estes. É necessário recorrer a métodos exaustivos, que enumeram os
+vários estados possíveis do jogo. Nesta secção descrevemos 3 métodos
+com este comportamento. A ideia geral deste métodos é de, a partir de
+uma configuração inicial, enumerar as várias transições possíveis, com
+o objetivo de explorar o espaço de estados disponível até chegar a
+posições terminais. Como este espaço de estados pode ser demasiado
+extenso, recorrem-se a heurísticas para medir o valor de configurações
+não terminais e assim efetua-se a pesquisa apenas até uma certa
+profundidade.
 
 Para simplificar a discussão nesta secção e nas próximas, introduzimos
 alguns termos a usar. Um estado de um jogo é chamado de configuração
@@ -117,7 +117,7 @@ ou tabuleiro. O valor da função heurística para um determinado
 tabuleiro é chamada da função utilidade. O \textit{payoff} é o valor
 relativo de um tabuleiro (distinguimo-lo da função utilidade porque
 consideramo-lo um valor teórico, enquanto que a função utilidade é um
-valor empírico dado pela heurística). Na Subsecção \ref{ssec:mcts} é
+valor estimado dado pela heurística). Na Subsecção \ref{ssec:mcts} é
 descrito um algoritmo em árvore, por isso usa-se a notação padrão de
 métodos de pesquisa (uma árvore cujos elementos são nós, o nó inicial
 é a raiz e os nós mais profundos são as folhas \ldots).
@@ -139,7 +139,8 @@ O algoritmo de Minimax aplica a ideia descrita pelo teorema através de
 uma busca em profundidade, devolvendo assim o melhor \emph{payoff}
 para o um dado estado do jogo. Este algoritmo tem complexidade
 exponencial de $O(b^{h})$, sendo $b$ o fator de ramificação do jogo e
-$h$ um limite superior do número máximo de jogadas.
+$h$ um limite superior do número máximo de jogadas. O pseudocódigo
+deste método encontra-se no Algoritmo \ref{alg:mini}.
 
 \begin{algorithm}
 \begin{algorithmic}
@@ -162,15 +163,18 @@ $h$ um limite superior do número máximo de jogadas.
   \State\Return{$best$} 
 \EndFunction
 \end{algorithmic}
-\caption{Minimax}
+\caption{O \textit{Minimax}}
+\label{alg:mini}
 \end{algorithm}
 
 \subsubsection{O \textit{Negamax}}
 
-O algoritmo \textit{Negamax} é uma variante simplificada do \textit{Minimax} para jogos
-que verificam uma simetria entre os valores do estado para cada um dos
-jogadores. Sendo assim, é possível minimizar ou maximizar valores do
-oponente através da negação do valor \textit{Negamax} da jogada seguinte.
+O algoritmo \textit{Negamax} é uma variante simplificada do
+\textit{Minimax} baseada na simetria entre os valores do estado para
+cada um dos jogadores que o teorema do \textit{Minimax} exibe. Sendo
+assim, é possível minimizar ou maximizar valores do oponente através
+da negação do valor \textit{Negamax} da jogada seguinte. O
+pseudocódigo deste método encontra-se no Algoritmo \ref{alg:nega}.
 
 \begin{algorithm}
 \begin{algorithmic}
@@ -185,7 +189,8 @@ oponente através da negação do valor \textit{Negamax} da jogada seguinte.
   \State\Return{$best$} 
 \EndFunction
 \end{algorithmic}
-\caption{Negamax}
+\caption{O \textit{Negamax}}
+\label{alg:nega}
 \end{algorithm}
 
 \subsection{O Método \textit{Alpha-Beta Pruning}}
@@ -200,12 +205,8 @@ O nome ``Alpha-Beta'' deve-se ao uso de duas variáveis que,
 respetivamente, espeficicam o limite inferior e superior dos valores
 de nós que devem ser expandidos\cite{Russell:AI:2003}. A variável
 $\alpha$ guarda o valor do melhor para o jogador ``max'' e $\beta$
-guarda o melhor valor para o jogador ``min''.
-
-Uma limitação deste algoritmo é a dependência da ordem ``correta'' na
-análise dos nós sucessores. Se a lista sucessores for gerada de forma
-a que os nós que terão pior valor sejam expandidos primeiro, este
-algoritmo terá de percorrer a árvore completa.
+guarda o melhor valor para o jogador ``min''. O pseudocódigo deste
+método encontra-se no Algoritmo \ref{alg:alpha}.
 
 \begin{algorithm}
 \begin{algorithmic}
@@ -236,20 +237,30 @@ algoritmo terá de percorrer a árvore completa.
   \State\Return{$best$} 
 \EndFunction
 \end{algorithmic}
-\caption{\emph{Alpha-Beta Pruning}}
+\caption{O \emph{Alpha-Beta Pruning}}
+\label{alg:alpha}
 \end{algorithm}
+
+Uma limitação deste algoritmo é a dependência da ordem ``correta'' na
+análise dos nós sucessores. Se a lista sucessores for gerada de forma
+a que os nós que terão pior valor sejam expandidos primeiro, este
+algoritmo terá de percorrer a árvore completa, tendo um comportamento
+equivalente ao do algoritmo \textit{Minimax}.
 
 \subsubsection{Otimizações Comuns}\label{ab:opt}
 
-Existem várias otimizações aos algoritmos acima descritos. Um exemplo
-seria tabelas de transposição\footnote{do inglês: \emph{Transposition
-    Tables}.} que permitem memorizar as posições pelas quais o
-algoritmo de busca adversarial já passou e os seus respetivos
-valores. Dessa forma, é possível evitar recalcular valores de nós já
-calculados noutros ramos.
+Estes métodos já foram extensivamente estudados muito para além das
+suas formas iniciais. Com efeito, na literatura existem várias
+otimizações comuns aos algoritmos acima descritos, que são
+obrigatórias num programa competitivo.
 
-Tabelas de transposição são especialmente benéficas em pesquisas
-iterativas, porém constituem um custo de memória elevado.
+Um exemplo conhecido são as tabelas de transposição\footnote{do
+  inglês: \emph{Transposition Tables}.} que permitem memorizar as
+posições pelas quais o algoritmo de busca adversarial já passou e os
+seus respetivos valores. Dessa forma, é possível evitar recalcular
+valores de nós já calculados noutros ramos. As tabelas de transposição
+são especialmente benéficas em pesquisas iterativas, porém constituem
+um custo de memória elevado.
 
 É possível otimizar o \emph{pruning} do \emph{Alpha-Beta} através de
 \emph{Aspiration Windows}. Este método consiste na previsão e
@@ -257,13 +268,15 @@ utilização de um limite inferior e superior mais curto. Na
 eventualidade o resultado verdadeiro se encontrar fora desta janela é
 necessário refazer a pesquisa com um intervalo maior.
 
-Parar a uma dada prufundidade máxima nem sempre é a melhor estratégia
+Parar a uma dada profundidade máxima nem sempre é a melhor estratégia
 para um agente artificial, porque o nó terminal pode causar grandes
 mudanças de jogo e o agente não pode expandir os nós seguintes para
-poder decidir se é uma jogada boa ou não.  \emph{Quiescence} é uma
+poder decidir se é uma jogada boa ou não. \emph{Quiescence} é uma
 melhoria à qualidade do resultado da pesquisa \emph{Alpha-Beta},
 avaliando apenas movimentos que não causem grandes mudanças no jogo e
-expandindo os restantes.
+expandindo os restantes. Assim, o algoritmo perde mais tempo em certas
+posições críticas, mais instáveis, e melhora a qualidade geral da
+pesquisa.
 
 %(http://chessprogramming.wikispaces.com/Alpha-Beta#Enhancements)
 %(http://www.arimaa.com/arimaa/papers/ThomasJakl/bc-thesis.pdf Section 3.1)
@@ -288,8 +301,9 @@ por 19).  Em 2005, baseado num trabalho desenvolvido em
 resultados muito melhores do que até então, a \texttt{MCTS}. Desde
 então que já sofreu muitos desenvolvimentos e várias otimizações e é o
 algoritmo com melhor performance em \textit{Go} e além disso foi
-aplicado a vários outros jogos (como o \textit{Hex}, o \textit{Arimaa}
-e até \textit{Poker}).
+aplicado a vários outros jogos (como o \textit{Hex}
+\cite{Arneson:2009}, o \textit{Arimaa} \cite{Kozelek:2009} e até
+\textit{Poker} \cite{Rubin:2011}).
 
 A ideia base é a de usar simulações pseudoaleatórias (chamadas de
 \textit{playouts}) de jogos a partir de cada posição e verificar
@@ -360,8 +374,8 @@ ganhos do jogo. É o dilema da exploração contra aproveitamento (em
 inglês \textit{exploitation vs exploration}).
 
 Existem várias maneiras de abordar este problema. Uma das primeiras a
-ser aplicada a \texttt{MCTS} chama-se \textit{Upper Confidence
-  Bound}. Este método seleciona cada nó uma vez
+ser aplicada a \texttt{MCTS} chama-se \textit{Upper Confidence Bound}
+\cite{Kocsis:2006}. Este método seleciona cada nó uma vez
 inicialmente. Posteriormente usa a seguinte fórmula de exploração e
 escolhe o nó que a maximiza: $\bar{X_i} + c
 \sqrt{\frac{\log{n}}{n_i}}$ para cada nó $i$, onde $\bar{X_i}$ é o
@@ -416,8 +430,9 @@ melhoram.
 %(http://arimaa.com/arimaa/papers/TomasKozelekThesis/mt.pdf Section 3.3)
 
 Nesta subsecção introduzimos algumas das otimizações mais comuns e que
-levam a melhores resultados com a \texttt{MCTS}. Como o espaço é
-limitado (e o tempo também), descrevem-se apenas brevemente cada uma.
+levam a melhores resultados com a \texttt{MCTS} \cite{Kozelek:2009}
+\cite{Jakl:2011}. Como o espaço é limitado (e o tempo também),
+descrevem-se apenas brevemente cada uma.
 
 \begin{itemize}
 \item \textbf{\textit{Progressive Bias}}: Esta otimização corresponde
@@ -753,7 +768,7 @@ poderá melhorar muito os programas é a paralelização do código. Para
 ambos os métodos já existe uma vasta literatura sobre
 paralelismo. Outro objetivo futuro é o de juntar a \texttt{MCTS} com a
 pesquisa \textit{Alpha-Beta} para tirar o melhor dos dois, em algo
-parecido com uma \textit{Monte Carlo Alpha-Beta}.
+parecido com uma \textit{Monte Carlo Alpha-Beta} \cite{Winands:2011}.
 
 Fazendo apenas uma nota final, depois da intuição estabelecida,
 concluímos que a \texttt{MCTS} se comportou ligeiramente melhor,
