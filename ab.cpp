@@ -50,6 +50,10 @@ board AB::applyMoves(board b, vector<Move> m, int player) {
 }
 
 vector<vector<Move> > AB::Successors(board b) {
+  static map<board, vector<vector<Move> > > memo;
+  if (memo.find(b)!= memo.end())
+    return memo[b];
+
   vector<Move> r1;
   vector<vector<Move> > r;
   int player = Board::valid_board_player(b);
@@ -76,7 +80,7 @@ vector<vector<Move> > AB::Successors(board b) {
       vector<Move> v; v.push_back(m);
       r.push_back(v);
     }
-  return r;
+  return memo[b] = r;
 }
 
 pair<double, board> AB::MaxValue(board b, double alpha, double beta) {

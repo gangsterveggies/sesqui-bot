@@ -83,7 +83,7 @@ vector<Move> calculate()
 
   if (method_flag == 0)
   {
-    engine = new AB(3);
+    engine = new AB(2);
   }
   else if (method_flag == 1)
   {
@@ -92,7 +92,7 @@ vector<Move> calculate()
   }
   else if (method_flag == 2)  
   {
-    AB * minimax = new AB(3);
+    AB * minimax = new AB(2);
     minimax->setPruning(false);
     engine = minimax;
   }
