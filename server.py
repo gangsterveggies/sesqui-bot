@@ -35,6 +35,8 @@ class myHandler(BaseHTTPRequestHandler):
     return dump.replace('$', '\\$')
 
 try:
+  if len(sys.argv) > 2:
+    PORT_NUMBER = int(sys.argv[2])
   server = HTTPServer(('', PORT_NUMBER), myHandler)
   print 'Started httpserver on port ' , PORT_NUMBER
   server.serve_forever()
